@@ -90,9 +90,13 @@ html {
 body {
   font-family: var(--font-sans);
   color: var(--text-primary);
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
   line-height: 1.6;
   min-height: 100vh;
+}
+
+main {
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
 
 /* Typography */
@@ -138,6 +142,26 @@ a:hover {
 
 .container-narrow {
   max-width: 800px;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-primary,
+.text-text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary,
+.text-text-secondary,
+.text-tertiary,
+.text-text-tertiary {
+  color: #1a202c;
+}
+
+.text-error {
+  color: var(--error);
 }
 
 /* Glassmorphism Card */
@@ -302,6 +326,98 @@ a:hover {
 .card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+.section {
+  padding: var(--spacing-2xl) 0;
+}
+
+.section-muted {
+  background: var(--bg-secondary);
+}
+
+.section-contrast {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+}
+
+.hero {
+  padding: var(--spacing-2xl) 0 var(--spacing-2xl);
+  background: var(--bg-primary);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+}
+
+.hero__subtitle {
+  color: var(--text-secondary);
+}
+
+.footer {
+  padding: var(--spacing-2xl) 0;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: white;
+}
+
+.footer__grid {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.footer__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+}
+
+.footer__subtitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+.footer__text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.footer__list a {
+  color: inherit;
+  transition: opacity var(--transition-fast);
+}
+
+.footer__list a:hover {
+  opacity: 0.8;
+}
+
+.footer__divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: var(--spacing-lg) 0 var(--spacing-md);
+}
+
+.footer__copyright {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card-header {

@@ -10,6 +10,14 @@ if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
   exit 1
 fi
 
+# Ensure API endpoint is available for frontend build
+if [ -z "$VITE_API_URL" ]; then
+  export VITE_API_URL="https://church-management.marcuxyang.workers.dev"
+  echo "ℹ️  VITE_API_URL not provided. Defaulting to $VITE_API_URL"
+else
+  echo "ℹ️  Using VITE_API_URL=$VITE_API_URL"
+fi
+
 # Build frontend
 echo "📦 Building frontend..."
 npm run build

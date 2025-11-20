@@ -1,7 +1,21 @@
-const API_URL = (
-    import.meta.env.VITE_API_URL ||
-    'http://localhost:8787'
-).replace(/\/$/, '');
+const fallbackApi = 'https://church-management.marcuxyang.workers.dev';
+
+function sanitizeUrl(url = '') {
+    return url.replace(/\/$/, '');
+}
+
+function shouldIgnoreEnvUrl(url) {
+    if (!url) return true;
+    if (typeof window === 'undefined') return false;
+
+    const isLocalEnv = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const pointsToLocal = url.includes('localhost') || url.includes('127.0.0.1');
+
+    return !isLocalEnv && pointsToLocal;
+}
+
+const envApiUrl = import.meta.env.VITE_API_URL;
+const API_URL = sanitizeUrl(shouldIgnoreEnvUrl(envApiUrl) ? fallbackApi : (envApiUrl || fallbackApi));
 
 class APIClient {
     constructor() {

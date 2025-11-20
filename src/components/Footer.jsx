@@ -1,44 +1,52 @@
 export default function Footer() {
     const currentYear = new Date().getFullYear();
 
+    const footerLinks = [
+        { label: '關於我們', href: '/about' },
+        { label: '活動訊息', href: '/events' },
+        { label: '主日訊息', href: '/sermons' },
+        { label: '線上奉獻', href: '/give' },
+    ];
+
+    const contact = [
+        '📍 台灣台北市',
+        '📞 +886-XXX-XXXXXX',
+        '✉️ info@church.com',
+    ];
+
     return (
-        <footer className="bg-text-primary text-white" style={{ padding: '3rem 0' }}>
+        <footer className="footer">
             <div className="container">
-                <div className="grid grid-3" style={{ marginBottom: '2rem' }}>
-                    {/* About */}
+                <div className="grid grid-3 gap-lg footer__grid">
                     <div>
-                        <h3 className="text-xl font-bold mb-4">教會管理系統</h3>
-                        <p className="text-text-tertiary">
-                            致力於幫助教會更有效地管理會友、活動、課程與小組，
-                            讓教會專注於最重要的事工。
+                        <h3 className="footer__title">教會管理系統</h3>
+                        <p className="footer__text">
+                            使用一致的色彩與排版，維持視覺整體感，協助教會專注在服事與牧養。
                         </p>
                     </div>
-
-                    {/* Quick Links */}
                     <div>
-                        <h4 className="text-lg font-bold mb-4">快速連結</h4>
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            <li style={{ marginBottom: '0.5rem' }}><a href="/about" className="text-text-tertiary">關於我們</a></li>
-                            <li style={{ marginBottom: '0.5rem' }}><a href="/events" className="text-text-tertiary">活動訊息</a></li>
-                            <li style={{ marginBottom: '0.5rem' }}><a href="/sermons" className="text-text-tertiary">主日訊息</a></li>
-                            <li style={{ marginBottom: '0.5rem' }}><a href="/give" className="text-text-tertiary">線上奉獻</a></li>
+                        <h4 className="footer__subtitle">快速連結</h4>
+                        <ul className="footer__list">
+                            {footerLinks.map((item) => (
+                                <li key={item.href}>
+                                    <a href={item.href}>{item.label}</a>
+                                </li>
+                            ))}
                         </ul>
                     </div>
-
-                    {/* Contact */}
                     <div>
-                        <h4 className="text-lg font-bold mb-4">聯絡我們</h4>
-                        <ul style={{ listStyle: 'none', padding: 0 }} className="text-text-tertiary">
-                            <li style={{ marginBottom: '0.5rem' }}>📍 台灣台北市</li>
-                            <li style={{ marginBottom: '0.5rem' }}>📞 +886-XXX-XXXXXX</li>
-                            <li style={{ marginBottom: '0.5rem' }}>✉️ info@church.com</li>
+                        <h4 className="footer__subtitle">聯絡我們</h4>
+                        <ul className="footer__list">
+                            {contact.map((text) => (
+                                <li key={text}>{text}</li>
+                            ))}
                         </ul>
                     </div>
                 </div>
-
-                <div style={{ borderTop: '1px solid var(--text-secondary)', paddingTop: '2rem', textAlign: 'center' }} className="text-text-tertiary">
-                    <p>&copy; {currentYear} 教會管理系統. All rights reserved.</p>
-                </div>
+                <div className="footer__divider" />
+                <p className="footer__copyright">
+                    &copy; {currentYear} 教會管理系統 · Blessing Haven
+                </p>
             </div>
         </footer>
     );
