@@ -1,0 +1,19 @@
+# Google Sheets Configuration
+GOOGLE_SHEETS_CREDENTIALS='{"type":"service_account","project_id":"your-project",...}'
+GOOGLE_SHEET_ID=your_sheet_id_here
+
+# Resend Email
+RESEND_API_KEY=re_your_api_key
+EMAIL_FROM=notify@blessing-haven.club
+EMAIL_FROM_NAME=Church Management
+
+# JWT Authentication
+JWT_SECRET=your_random_secret_key_here
+
+# LINE Official Account (Optional)
+LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
+LINE_CHANNEL_SECRET=your_line_channel_secret
+LINE_LIFF_ID=your_liff_id
+
+# Environment
+ENVIRONMENT=development

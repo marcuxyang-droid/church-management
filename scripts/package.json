@@ -1,0 +1,11 @@
+{
+    "name": "church-management-scripts",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "init-sheets": "node init-sheets.js"
+    },
+    "dependencies": {
+        "googleapis": "^128.0.0"
+    }
+}
