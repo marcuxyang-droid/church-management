@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { corsMiddleware } from './middleware/cors.js';
+import { cors } from 'hono/cors';
 import { authMiddleware, optionalAuthMiddleware } from './middleware/auth.js';
 import { requirePermission, requireRole } from './middleware/rbac.js';
 
@@ -41,7 +41,12 @@ import {
 const app = new Hono();
 
 // Global middleware
-app.use('*', corsMiddleware);
+app.use('*', cors({
+    origin: (origin) => origin || '*',
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 86400,
+}));
 
 // Health check
 app.get('/health', (c) =>
