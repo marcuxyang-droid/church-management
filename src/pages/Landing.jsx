@@ -68,42 +68,37 @@ export default function Landing() {
     return (
         <div>
             <section className="hero">
-                <div className="container" style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', alignItems: 'center' }}>
-                    <div style={{ flex: '1 1 420px' }}>
-                        <p className="hero__eyebrow">Blessing Haven · 教會管理系統</p>
-                        <h1 className="text-5xl font-bold mb-6 fade-in hero__title">
-                            歡迎回到家的溫度
-                        </h1>
-                        <p className="text-xl mb-8 hero__subtitle">
-                            在這裡，我們以真實的生命同行，用敬拜、關懷和行動讓福音延續；讓每一次聚會都像重逢，讓每一次差派都被祝福。
-                        </p>
-                        <div className="flex flex-wrap gap-4">
-                            <Link to="/newcomer" className="btn btn-primary btn-lg">
-                                我是新朋友
-                            </Link>
-                            <Link to="/events" className="btn btn-outline btn-lg">
-                                查看聚會與活動
-                            </Link>
-                        </div>
-                    </div>
-                    <div style={{ flex: '1 1 320px' }}>
-                        <div className="hero__grid">
-                            {stats.map((stat) => (
-                                <div key={stat.label} className="hero__stat">
-                                    <p className="stat-card__value" style={{ fontSize: '2rem' }}>
-                                        {stat.value}
-                                    </p>
-                                    <p className="font-semibold">{stat.label}</p>
-                                    <p className="text-text-tertiary text-sm">{stat.detail}</p>
-                                </div>
-                            ))}
-                        </div>
+                <div className="container text-center">
+                    <p className="hero__eyebrow">Blessing Haven · 教會管理系統</p>
+                    <h1 className="text-5xl font-bold mb-6 fade-in hero__title">
+                        歡迎來到我們的教會
+                    </h1>
+                    <p className="text-xl mb-8 max-w-2xl mx-auto hero__subtitle">
+                        一個充滿愛與恩典的大家庭，我們致力於傳揚福音、建立生命、服務社區
+                    </p>
+                    <div className="flex gap-4 justify-center">
+                        <Link to="/newcomer" className="btn btn-primary btn-lg">
+                            我是新朋友
+                        </Link>
+                        <Link to="/events" className="btn btn-outline btn-lg">
+                            查看活動
+                        </Link>
                     </div>
                 </div>
             </section>
 
-            <section className="section section-muted">
+            <section className="section">
                 <div className="container">
+                    <div className="stat-grid mb-10">
+                        {stats.map((stat) => (
+                            <div key={stat.label} className="stat-card">
+                                <div className="stat-card__value">{stat.value}</div>
+                                <p className="font-semibold">{stat.label}</p>
+                                <p className="text-text-tertiary text-sm">{stat.detail}</p>
+                            </div>
+                        ))}
+                    </div>
+
                     <div className="feature-grid">
                         {features.map((feature) => (
                             <div key={feature.title} className="feature-card">
@@ -116,7 +111,7 @@ export default function Landing() {
                 </div>
             </section>
 
-            <section className="section">
+            <section className="section section-muted">
                 <div className="container">
                     <div className="max-w-3xl mx-auto text-center mb-12">
                         <h2 className="text-4xl font-bold mb-4">關於我們</h2>
@@ -132,7 +127,7 @@ export default function Landing() {
                 </div>
             </section>
 
-            <section className="section section-muted">
+            <section className="section">
                 <div className="container">
                     <div className="flex items-center justify-between mb-8">
                         <div>
@@ -173,7 +168,7 @@ export default function Landing() {
                 </div>
             </section>
 
-            <section className="section">
+            <section className="section section-muted">
                 <div className="container">
                     <div className="max-w-2xl mx-auto text-center mb-10">
                         <h2 className="text-3xl font-bold mb-4">家人的故事</h2>
