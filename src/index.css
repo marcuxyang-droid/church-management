@@ -17,12 +17,12 @@
   --info: #4299e1;
   
   --bg-primary: #ffffff;
-  --bg-secondary: #f7fafc;
-  --bg-tertiary: #edf2f7;
+  --bg-secondary: #dfe3eb;
+  --bg-tertiary: #e8ecf3;
   
-  --text-primary: #1f2933;
-  --text-secondary: #304050;
-  --text-tertiary: #5d6b7b;
+  --text-primary: #1f1f27;
+  --text-secondary: #2b2e3c;
+  --text-tertiary: #4e5363;
   
   --border: #e2e8f0;
   --shadow: rgba(0, 0, 0, 0.1);
@@ -498,7 +498,7 @@ a:hover {
 
 .navbar__link {
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .navbar__link:hover {
@@ -550,8 +550,8 @@ a:hover {
 .sidebar {
   width: 260px;
   min-height: 100vh;
-  background: #f4f6fb;
-  border-right: 1px solid #e3e9f4;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
   padding: var(--spacing-xl);
   display: flex;
   flex-direction: column;
