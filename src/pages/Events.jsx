@@ -44,9 +44,10 @@ export default function Events() {
         <div>
             <section className="section-contrast">
                 <div className="container text-center">
+                    <p className="hero__eyebrow">Events</p>
                     <h1 className="text-4xl font-bold mb-4">活動訊息</h1>
                     <p className="text-lg opacity-90 max-w-2xl mx-auto">
-                        查看即將舉行的聚會、課程與特會，線上預先報名更輕鬆。
+                        每一場聚會、培訓與特會，都是祝福城市與生命的契機；線上報名、即時掌握。
                     </p>
                 </div>
             </section>
