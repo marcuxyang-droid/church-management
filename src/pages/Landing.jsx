@@ -68,21 +68,34 @@ export default function Landing() {
     return (
         <div>
             <section className="hero">
-                <div className="container text-center">
-                    <p className="hero__eyebrow">Blessing Haven · 教會管理系統</p>
-                    <h1 className="text-5xl font-bold mb-6 fade-in hero__title">
-                        歡迎來到我們的教會
-                    </h1>
-                    <p className="text-xl mb-8 max-w-2xl mx-auto hero__subtitle">
-                        一個充滿愛與恩典的大家庭，我們致力於傳揚福音、建立生命、服務社區
-                    </p>
-                    <div className="flex gap-4 justify-center">
-                        <Link to="/newcomer" className="btn btn-primary btn-lg">
-                            我是新朋友
-                        </Link>
-                        <Link to="/events" className="btn btn-outline btn-lg">
-                            查看活動
-                        </Link>
+                <div className="hero__background">
+                    <div className="hero__gradient" />
+                    <div className="hero__pattern" />
+                </div>
+                <div className="container hero__container">
+                    <div className="hero__content">
+                        <p className="hero__eyebrow">Blessing Haven</p>
+                        <h1 className="hero__title">
+                            <span className="hero__title-line">我們盼望每個人都能在這裡</span>
+                            <span className="hero__title-line hero__title-line--highlight">被愛、被建立、被差派</span>
+                        </h1>
+                        <p className="hero__subtitle">
+                            這裡不只是聚會，更是同行的家。我們致力於傳揚福音、建立生命、服務社區，讓每個人都能在信仰中成長，在愛中被接納。
+                        </p>
+                        <div className="hero__actions">
+                            <Link to="/newcomer" className="btn btn-primary btn-lg hero__cta-primary">
+                                我是新朋友
+                            </Link>
+                            <Link to="/events" className="btn btn-outline btn-lg hero__cta-secondary">
+                                查看活動
+                            </Link>
+                        </div>
+                        <div className="hero__scroll-indicator">
+                            <span>向下探索</span>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </section>
