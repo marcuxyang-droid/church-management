@@ -523,7 +523,7 @@ main > div > section:first-of-type:not(.hero) {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(248, 250, 255, 0.7) 0%, rgba(255, 255, 255, 0.85) 100%);
+  background: linear-gradient(180deg, rgba(248, 250, 255, 0.2) 0%, rgba(255, 255, 255, 0.4) 100%);
   z-index: 1;
 }
 
