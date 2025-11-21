@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 const columns = [
     { key: 'name', label: '姓名' },
@@ -16,6 +17,22 @@ export default function Members() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        gender: '',
+        birthday: '',
+        phone: '',
+        email: '',
+        address: '',
+        join_date: new Date().toISOString().split('T')[0],
+        baptism_date: '',
+        faith_status: 'newcomer',
+        cell_group_id: '',
+        tags: '',
+        health_notes: '',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchMembers();
@@ -44,6 +61,35 @@ export default function Members() {
         );
     }, [members, search]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createMember(formData);
+            setIsModalOpen(false);
+            setFormData({
+                name: '',
+                gender: '',
+                birthday: '',
+                phone: '',
+                email: '',
+                address: '',
+                join_date: new Date().toISOString().split('T')[0],
+                baptism_date: '',
+                faith_status: 'newcomer',
+                cell_group_id: '',
+                tags: '',
+                health_notes: '',
+            });
+            fetchMembers();
+        } catch (err) {
+            setError(err.message || '建立會友失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -64,7 +110,7 @@ export default function Members() {
                     <button className="btn btn-outline" onClick={fetchMembers} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增會友</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增會友</button>
                 </div>
             </div>
 
@@ -110,6 +156,149 @@ export default function Members() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增會友">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">姓名 *</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">性別</label>
+                            <select
+                                className="input w-full"
+                                value={formData.gender}
+                                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                            >
+                                <option value="">請選擇</option>
+                                <option value="male">男</option>
+                                <option value="female">女</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">生日</label>
+                            <input
+                                type="date"
+                                className="input w-full"
+                                value={formData.birthday}
+                                onChange={(e) => setFormData({ ...formData, birthday: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">電話</label>
+                            <input
+                                type="tel"
+                                className="input w-full"
+                                value={formData.phone}
+                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">電子郵件</label>
+                            <input
+                                type="email"
+                                className="input w-full"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">地址</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.address}
+                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">加入日期</label>
+                            <input
+                                type="date"
+                                className="input w-full"
+                                value={formData.join_date}
+                                onChange={(e) => setFormData({ ...formData, join_date: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">受洗日期</label>
+                            <input
+                                type="date"
+                                className="input w-full"
+                                value={formData.baptism_date}
+                                onChange={(e) => setFormData({ ...formData, baptism_date: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">信仰狀態</label>
+                            <select
+                                className="input w-full"
+                                value={formData.faith_status}
+                                onChange={(e) => setFormData({ ...formData, faith_status: e.target.value })}
+                            >
+                                <option value="newcomer">新朋友</option>
+                                <option value="seeker">慕道友</option>
+                                <option value="baptized">受洗者</option>
+                                <option value="transferred">轉會</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">小組 ID</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                value={formData.cell_group_id}
+                                onChange={(e) => setFormData({ ...formData, cell_group_id: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">標籤</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            placeholder="用逗號分隔"
+                            value={formData.tags}
+                            onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">健康備註</label>
+                        <textarea
+                            className="input w-full"
+                            rows="3"
+                            value={formData.health_notes}
+                            onChange={(e) => setFormData({ ...formData, health_notes: e.target.value })}
+                        />
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立會友'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

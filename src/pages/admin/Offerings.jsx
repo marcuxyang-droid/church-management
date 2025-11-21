@@ -1,11 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 export default function Offerings() {
     const [offerings, setOfferings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [filter, setFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        member_id: '',
+        amount: '',
+        type: 'tithe',
+        method: 'cash',
+        transaction_id: '',
+        date: new Date().toISOString().split('T')[0],
+        notes: '',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchOfferings();
@@ -34,6 +46,30 @@ export default function Offerings() {
         0,
     );
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createOffering(formData);
+            setIsModalOpen(false);
+            setFormData({
+                member_id: '',
+                amount: '',
+                type: 'tithe',
+                method: 'cash',
+                transaction_id: '',
+                date: new Date().toISOString().split('T')[0],
+                notes: '',
+            });
+            fetchOfferings();
+        } catch (err) {
+            setError(err.message || '建立奉獻記錄失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -58,7 +94,7 @@ export default function Offerings() {
                     <button className="btn btn-outline" onClick={fetchOfferings} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增奉獻記錄</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增奉獻記錄</button>
                 </div>
             </div>
 
@@ -107,6 +143,104 @@ export default function Offerings() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增奉獻記錄">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">會友 ID *</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.member_id}
+                            onChange={(e) => setFormData({ ...formData, member_id: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">金額 *</label>
+                            <input
+                                type="number"
+                                className="input w-full"
+                                value={formData.amount}
+                                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">日期 *</label>
+                            <input
+                                type="date"
+                                className="input w-full"
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">類別 *</label>
+                            <select
+                                className="input w-full"
+                                value={formData.type}
+                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                required
+                            >
+                                <option value="tithe">十一奉獻</option>
+                                <option value="thanksgiving">感恩奉獻</option>
+                                <option value="building">建堂奉獻</option>
+                                <option value="special">特別奉獻</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">付款方式 *</label>
+                            <select
+                                className="input w-full"
+                                value={formData.method}
+                                onChange={(e) => setFormData({ ...formData, method: e.target.value })}
+                                required
+                            >
+                                <option value="cash">現金</option>
+                                <option value="bank_transfer">銀行轉帳</option>
+                                <option value="linepay">LINE Pay</option>
+                                <option value="card">信用卡</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">交易編號</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.transaction_id}
+                            onChange={(e) => setFormData({ ...formData, transaction_id: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">備註</label>
+                        <textarea
+                            className="input w-full"
+                            rows="3"
+                            value={formData.notes}
+                            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        />
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立記錄'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

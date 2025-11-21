@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 const statusTheme = {
     draft: 'badge badge-warning',
@@ -12,6 +13,19 @@ export default function Events() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        start_date: '',
+        end_date: '',
+        location: '',
+        capacity: '',
+        fee: '',
+        registration_deadline: '',
+        status: 'draft',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchEvents();
@@ -35,6 +49,32 @@ export default function Events() {
         return events.filter((event) => event.status === statusFilter);
     }, [events, statusFilter]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createEvent(formData);
+            setIsModalOpen(false);
+            setFormData({
+                title: '',
+                description: '',
+                start_date: '',
+                end_date: '',
+                location: '',
+                capacity: '',
+                fee: '',
+                registration_deadline: '',
+                status: 'draft',
+            });
+            fetchEvents();
+        } catch (err) {
+            setError(err.message || '建立活動失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -56,7 +96,7 @@ export default function Events() {
                     <button className="btn btn-outline" onClick={fetchEvents} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增活動</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增活動</button>
                 </div>
             </div>
 
@@ -103,6 +143,117 @@ export default function Events() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增活動">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">活動名稱 *</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.title}
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">活動描述</label>
+                        <textarea
+                            className="input w-full"
+                            rows="4"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">開始時間 *</label>
+                            <input
+                                type="datetime-local"
+                                className="input w-full"
+                                value={formData.start_date}
+                                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">結束時間</label>
+                            <input
+                                type="datetime-local"
+                                className="input w-full"
+                                value={formData.end_date}
+                                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">地點 *</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                value={formData.location}
+                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">報名截止</label>
+                            <input
+                                type="datetime-local"
+                                className="input w-full"
+                                value={formData.registration_deadline}
+                                onChange={(e) => setFormData({ ...formData, registration_deadline: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">人數上限</label>
+                            <input
+                                type="number"
+                                className="input w-full"
+                                value={formData.capacity}
+                                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">費用</label>
+                            <input
+                                type="number"
+                                className="input w-full"
+                                value={formData.fee}
+                                onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">狀態</label>
+                        <select
+                            className="input w-full"
+                            value={formData.status}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        >
+                            <option value="draft">草稿</option>
+                            <option value="published">已發布</option>
+                            <option value="closed">已結束</option>
+                        </select>
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立活動'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }
