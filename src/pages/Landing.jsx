@@ -66,112 +66,122 @@ export default function Landing() {
     const highlightEvents = useMemo(() => events.slice(0, 3), [events]);
 
     return (
-        <div>
-            <section className="hero">
-                <div className="hero__background">
-                    <div className="hero__gradient" />
-                    <div className="hero__pattern" />
+        <div className="landing-page">
+            {/* Hero Section */}
+            <section className="landing-hero">
+                <div className="landing-hero__bg">
+                    <div className="landing-hero__overlay"></div>
                 </div>
-                <div className="container hero__container">
-                    <div className="hero__content">
-                        <p className="hero__eyebrow">Blessing Haven</p>
-                        <h1 className="hero__title">
-                            <span className="hero__title-line">我們盼望每個人都能在這裡</span>
-                            <span className="hero__title-line hero__title-line--highlight">被愛、被建立、被差派</span>
+                <div className="container">
+                    <div className="landing-hero__inner">
+                        <div className="landing-hero__badge">Blessing Haven</div>
+                        <h1 className="landing-hero__heading">
+                            <span className="landing-hero__heading-main">我們盼望每個人都能在這裡</span>
+                            <span className="landing-hero__heading-accent">被愛、被建立、被差派</span>
                         </h1>
-                        <p className="hero__subtitle">
+                        <p className="landing-hero__text">
                             這裡不只是聚會，更是同行的家。我們致力於傳揚福音、建立生命、服務社區，讓每個人都能在信仰中成長，在愛中被接納。
                         </p>
-                        <div className="hero__actions">
-                            <Link to="/newcomer" className="btn btn-primary btn-lg hero__cta-primary">
+                        <div className="landing-hero__actions">
+                            <Link to="/newcomer" className="landing-hero__btn landing-hero__btn--primary">
                                 我是新朋友
                             </Link>
-                            <Link to="/events" className="btn btn-outline btn-lg hero__cta-secondary">
+                            <Link to="/events" className="landing-hero__btn landing-hero__btn--secondary">
                                 查看活動
                             </Link>
                         </div>
-                        <div className="hero__scroll-indicator">
-                            <span>向下探索</span>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M6 9l6 6 6-6" />
-                            </svg>
-                        </div>
                     </div>
                 </div>
             </section>
 
-            <section className="section">
+            {/* Stats Section */}
+            <section className="landing-stats">
                 <div className="container">
-                    <div className="stat-grid mb-10">
+                    <div className="landing-stats__grid">
                         {stats.map((stat) => (
-                            <div key={stat.label} className="stat-card">
-                                <div className="stat-card__value">{stat.value}</div>
-                                <p className="font-semibold">{stat.label}</p>
-                                <p className="text-text-tertiary text-sm">{stat.detail}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="feature-grid">
-                        {features.map((feature) => (
-                            <div key={feature.title} className="feature-card">
-                                <div className="text-4xl mb-4">{feature.icon}</div>
-                                <h3 className="text-xl font-bold">{feature.title}</h3>
-                                <p className="text-text-secondary">{feature.description}</p>
+                            <div key={stat.label} className="landing-stats__item">
+                                <div className="landing-stats__value">{stat.value}</div>
+                                <div className="landing-stats__label">{stat.label}</div>
+                                <div className="landing-stats__detail">{stat.detail}</div>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            <section className="section section-muted">
+            {/* Features Section */}
+            <section className="landing-features">
                 <div className="container">
-                    <div className="max-w-3xl mx-auto text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4">關於我們</h2>
-                        <p className="text-lg text-text-secondary">
+                    <div className="landing-features__header">
+                        <h2 className="landing-features__title">我們的特色</h2>
+                        <p className="landing-features__subtitle">在這裡，每個人都能找到屬於自己的位置</p>
+                    </div>
+                    <div className="landing-features__grid">
+                        {features.map((feature) => (
+                            <div key={feature.title} className="landing-features__card">
+                                <div className="landing-features__icon">{feature.icon}</div>
+                                <h3 className="landing-features__card-title">{feature.title}</h3>
+                                <p className="landing-features__card-text">{feature.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* About Section */}
+            <section className="landing-about">
+                <div className="container">
+                    <div className="landing-about__content">
+                        <h2 className="landing-about__title">關於我們</h2>
+                        <p className="landing-about__text">
                             我們是一個充滿活力的教會，致力於幫助每個人認識神、經歷神的愛，並在信仰中成長。無論您是初次來訪或是尋找教會的家，我們都熱烈歡迎您！
                         </p>
-                    </div>
-                    <div className="text-center">
-                        <Link to="/about" className="btn btn-primary btn-lg">
+                        <Link to="/about" className="landing-about__btn">
                             認識教會
                         </Link>
                     </div>
                 </div>
             </section>
 
-            <section className="section">
+            {/* Events Section */}
+            <section className="landing-events">
                 <div className="container">
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 className="text-3xl font-bold">近期活動</h2>
-                            <p className="text-text-secondary">聚焦城市、聚焦生命，每個月都有精彩聚會</p>
+                    <div className="landing-events__header">
+                        <div className="landing-events__header-content">
+                            <h2 className="landing-events__title">近期活動</h2>
+                            <p className="landing-events__subtitle">聚焦城市、聚焦生命，每個月都有精彩聚會</p>
                         </div>
-                        <Link to="/events" className="btn btn-outline">
+                        <Link to="/events" className="landing-events__link">
                             查看更多
                         </Link>
                     </div>
 
                     {loadingEvents ? (
-                        <div className="text-center text-text-secondary">載入活動中...</div>
+                        <div className="landing-events__loading">載入活動中...</div>
                     ) : highlightEvents.length === 0 ? (
-                        <p className="text-center text-text-secondary">目前沒有即將舉行的活動。</p>
+                        <div className="landing-events__empty">目前沒有即將舉行的活動。</div>
                     ) : (
-                        <div className="grid grid-3">
+                        <div className="landing-events__grid">
                             {highlightEvents.map((event) => (
-                                <article key={event.id} className="card">
-                                    <p className="badge badge-primary mb-3">
+                                <article key={event.id} className="landing-events__card">
+                                    <div className="landing-events__card-date">
                                         {new Date(event.start_date).toLocaleDateString('zh-TW', { dateStyle: 'medium' })}
-                                    </p>
-                                    <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-                                    <p className="text-text-secondary mb-4 line-clamp-3">
+                                    </div>
+                                    <h3 className="landing-events__card-title">{event.title}</h3>
+                                    <p className="landing-events__card-description">
                                         {event.description || '歡迎加入我們，一起經歷神的作為。'}
                                     </p>
-                                    <div className="text-sm text-text-secondary space-y-2 mb-6">
-                                        <div>📍 {event.location || '教會'}</div>
-                                        <div>⏱ {formatEventDate(event.start_date, event.end_date)}</div>
+                                    <div className="landing-events__card-info">
+                                        <div className="landing-events__card-info-item">
+                                            <span className="landing-events__card-info-icon">📍</span>
+                                            <span>{event.location || '教會'}</span>
+                                        </div>
+                                        <div className="landing-events__card-info-item">
+                                            <span className="landing-events__card-info-icon">⏱</span>
+                                            <span>{formatEventDate(event.start_date, event.end_date)}</span>
+                                        </div>
                                     </div>
-                                    <Link to="/events" className="btn btn-primary w-full">
+                                    <Link to="/events" className="landing-events__card-btn">
                                         我要報名
                                     </Link>
                                 </article>
@@ -181,37 +191,39 @@ export default function Landing() {
                 </div>
             </section>
 
-            <section className="section section-muted">
+            {/* Testimonials Section */}
+            <section className="landing-testimonials">
                 <div className="container">
-                    <div className="max-w-2xl mx-auto text-center mb-10">
-                        <h2 className="text-3xl font-bold mb-4">家人的故事</h2>
-                        <p className="text-text-secondary">
+                    <div className="landing-testimonials__header">
+                        <h2 className="landing-testimonials__title">家人的故事</h2>
+                        <p className="landing-testimonials__subtitle">
                             信仰旅程從不孤單，我們一起經歷神的恩典與奇妙
                         </p>
                     </div>
-                    <div className="testimonials">
+                    <div className="landing-testimonials__grid">
                         {testimonials.map((testimonial) => (
-                            <div key={testimonial.author} className="testimonial-card">
-                                <p className="text-lg mb-4">“{testimonial.quote}”</p>
-                                <p className="text-text-tertiary font-semibold">{testimonial.author}</p>
+                            <div key={testimonial.author} className="landing-testimonials__card">
+                                <p className="landing-testimonials__quote">"{testimonial.quote}"</p>
+                                <p className="landing-testimonials__author">{testimonial.author}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            <section className="section">
+            {/* CTA Section */}
+            <section className="landing-cta">
                 <div className="container">
-                    <div className="cta-banner">
-                        <h2 className="text-3xl font-bold mb-4">加入我們的大家庭</h2>
-                        <p className="mb-6">
+                    <div className="landing-cta__content">
+                        <h2 className="landing-cta__title">加入我們的大家庭</h2>
+                        <p className="landing-cta__text">
                             無論您在人生的哪個階段，我們都歡迎您來到教會，一起經歷神的愛與恩典。
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link to="/newcomer" className="btn btn-primary btn-lg">
+                        <div className="landing-cta__actions">
+                            <Link to="/newcomer" className="landing-cta__btn landing-cta__btn--primary">
                                 新朋友登記
                             </Link>
-                            <Link to="/give" className="btn btn-secondary btn-lg">
+                            <Link to="/give" className="landing-cta__btn landing-cta__btn--secondary">
                                 支持教會
                             </Link>
                         </div>
