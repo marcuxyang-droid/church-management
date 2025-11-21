@@ -38,6 +38,55 @@ import {
     checkInEvent,
 } from './api/events.js';
 
+import {
+    getCourses,
+    getCourse,
+    createCourse,
+    updateCourse,
+    deleteCourse,
+} from './api/courses.js';
+
+import {
+    getCellGroups,
+    getCellGroup,
+    createCellGroup,
+    updateCellGroup,
+    deleteCellGroup,
+} from './api/cellgroups.js';
+
+import {
+    getVolunteers,
+    getVolunteer,
+    createVolunteer,
+    updateVolunteer,
+    deleteVolunteer,
+} from './api/volunteers.js';
+
+import {
+    getFinanceTransactions,
+    getFinanceTransaction,
+    createFinanceTransaction,
+    updateFinanceTransaction,
+    deleteFinanceTransaction,
+} from './api/finance.js';
+
+import {
+    getSurveys,
+    getSurvey,
+    createSurvey,
+    updateSurvey,
+    deleteSurvey,
+    getSurveyResponses,
+} from './api/surveys.js';
+
+import {
+    getMedia,
+    getMediaItem,
+    createMedia,
+    updateMedia,
+    deleteMedia,
+} from './api/media.js';
+
 const app = new Hono();
 
 // Global middleware
@@ -106,6 +155,50 @@ app.post(
     requirePermission('events:checkin'),
     checkInEvent,
 );
+
+// ===== Course Routes =====
+app.get('/api/courses', authMiddleware, requirePermission('courses:read'), getCourses);
+app.get('/api/courses/:id', authMiddleware, requirePermission('courses:read'), getCourse);
+app.post('/api/courses', authMiddleware, requirePermission('courses:create'), createCourse);
+app.put('/api/courses/:id', authMiddleware, requirePermission('courses:update'), updateCourse);
+app.delete('/api/courses/:id', authMiddleware, requirePermission('courses:delete'), deleteCourse);
+
+// ===== Cell Group Routes =====
+app.get('/api/cellgroups', authMiddleware, requirePermission('cellgroups:read'), getCellGroups);
+app.get('/api/cellgroups/:id', authMiddleware, requirePermission('cellgroups:read'), getCellGroup);
+app.post('/api/cellgroups', authMiddleware, requirePermission('cellgroups:create'), createCellGroup);
+app.put('/api/cellgroups/:id', authMiddleware, requirePermission('cellgroups:update'), updateCellGroup);
+app.delete('/api/cellgroups/:id', authMiddleware, requirePermission('cellgroups:delete'), deleteCellGroup);
+
+// ===== Volunteer Routes =====
+app.get('/api/volunteers', authMiddleware, requirePermission('volunteers:read'), getVolunteers);
+app.get('/api/volunteers/:id', authMiddleware, requirePermission('volunteers:read'), getVolunteer);
+app.post('/api/volunteers', authMiddleware, requirePermission('volunteers:create'), createVolunteer);
+app.put('/api/volunteers/:id', authMiddleware, requirePermission('volunteers:update'), updateVolunteer);
+app.delete('/api/volunteers/:id', authMiddleware, requirePermission('volunteers:delete'), deleteVolunteer);
+
+// ===== Finance Routes =====
+app.get('/api/finance', authMiddleware, requirePermission('finance:read'), getFinanceTransactions);
+app.get('/api/finance/:id', authMiddleware, requirePermission('finance:read'), getFinanceTransaction);
+app.post('/api/finance', authMiddleware, requirePermission('finance:create'), createFinanceTransaction);
+app.put('/api/finance/:id', authMiddleware, requirePermission('finance:update'), updateFinanceTransaction);
+app.delete('/api/finance/:id', authMiddleware, requirePermission('finance:delete'), deleteFinanceTransaction);
+
+// ===== Survey Routes =====
+app.get('/api/surveys', authMiddleware, requirePermission('surveys:read'), getSurveys);
+app.get('/api/surveys/:id', authMiddleware, requirePermission('surveys:read'), getSurvey);
+app.post('/api/surveys', authMiddleware, requirePermission('surveys:create'), createSurvey);
+app.put('/api/surveys/:id', authMiddleware, requirePermission('surveys:update'), updateSurvey);
+app.delete('/api/surveys/:id', authMiddleware, requirePermission('surveys:delete'), deleteSurvey);
+app.get('/api/surveys/:id/responses', authMiddleware, requirePermission('surveys:read'), getSurveyResponses);
+app.get('/api/survey-responses', authMiddleware, requirePermission('surveys:read'), getSurveyResponses);
+
+// ===== Media Routes =====
+app.get('/api/media', authMiddleware, requirePermission('media:read'), getMedia);
+app.get('/api/media/:id', authMiddleware, requirePermission('media:read'), getMediaItem);
+app.post('/api/media', authMiddleware, requirePermission('media:create'), createMedia);
+app.put('/api/media/:id', authMiddleware, requirePermission('media:update'), updateMedia);
+app.delete('/api/media/:id', authMiddleware, requirePermission('media:delete'), deleteMedia);
 
 app.notFound((c) => c.json({ error: 'Not Found' }, 404));
 

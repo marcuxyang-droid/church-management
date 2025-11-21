@@ -158,6 +158,190 @@ class APIClient {
             body: JSON.stringify(data),
         });
     }
+
+    // Courses endpoints
+    async getCourses(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/courses${query ? `?${query}` : ''}`);
+    }
+
+    async getCourse(id) {
+        return this.request(`/api/courses/${id}`);
+    }
+
+    async createCourse(data) {
+        return this.request('/api/courses', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateCourse(id, data) {
+        return this.request(`/api/courses/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteCourse(id) {
+        return this.request(`/api/courses/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    // Cell Groups endpoints
+    async getCellGroups(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/cellgroups${query ? `?${query}` : ''}`);
+    }
+
+    async getCellGroup(id) {
+        return this.request(`/api/cellgroups/${id}`);
+    }
+
+    async createCellGroup(data) {
+        return this.request('/api/cellgroups', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateCellGroup(id, data) {
+        return this.request(`/api/cellgroups/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteCellGroup(id) {
+        return this.request(`/api/cellgroups/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    // Volunteers endpoints
+    async getVolunteers(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/volunteers${query ? `?${query}` : ''}`);
+    }
+
+    async getVolunteer(id) {
+        return this.request(`/api/volunteers/${id}`);
+    }
+
+    async createVolunteer(data) {
+        return this.request('/api/volunteers', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateVolunteer(id, data) {
+        return this.request(`/api/volunteers/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteVolunteer(id) {
+        return this.request(`/api/volunteers/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    // Finance endpoints
+    async getFinanceTransactions(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/finance${query ? `?${query}` : ''}`);
+    }
+
+    async getFinanceTransaction(id) {
+        return this.request(`/api/finance/${id}`);
+    }
+
+    async createFinanceTransaction(data) {
+        return this.request('/api/finance', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateFinanceTransaction(id, data) {
+        return this.request(`/api/finance/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteFinanceTransaction(id) {
+        return this.request(`/api/finance/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    // Surveys endpoints
+    async getSurveys(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/surveys${query ? `?${query}` : ''}`);
+    }
+
+    async getSurvey(id) {
+        return this.request(`/api/surveys/${id}`);
+    }
+
+    async createSurvey(data) {
+        return this.request('/api/surveys', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateSurvey(id, data) {
+        return this.request(`/api/surveys/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteSurvey(id) {
+        return this.request(`/api/surveys/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    async getSurveyResponses(surveyId) {
+        return this.request(`/api/surveys/${surveyId}/responses`);
+    }
+
+    // Media endpoints
+    async getMedia(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/media${query ? `?${query}` : ''}`);
+    }
+
+    async getMediaItem(id) {
+        return this.request(`/api/media/${id}`);
+    }
+
+    async createMedia(data) {
+        return this.request('/api/media', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateMedia(id, data) {
+        return this.request(`/api/media/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteMedia(id) {
+        return this.request(`/api/media/${id}`, {
+            method: 'DELETE',
+        });
+    }
 }
 
 export const api = new APIClient();
