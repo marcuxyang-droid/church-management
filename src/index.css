@@ -97,6 +97,12 @@ body {
 
 main {
   background: var(--bg-primary);
+  padding-top: 0;
+}
+
+/* Pages without hero section need padding from navbar */
+main > *:not(.hero) {
+  padding-top: 0;
 }
 
 /* Typography */
@@ -341,14 +347,28 @@ a:hover {
 .section-contrast {
   background: linear-gradient(135deg, #eef2ff 0%, #f7e9ff 100%);
   color: var(--text-primary);
+  padding-top: calc(var(--spacing-2xl) + 80px);
+}
+
+/* Ensure first section on non-hero pages has proper spacing */
+main > div > section:first-of-type:not(.hero) {
+  padding-top: calc(var(--spacing-2xl) + 80px);
+}
+
+@media (max-width: 768px) {
+  .section-contrast,
+  main > div > section:first-of-type:not(.hero) {
+    padding-top: calc(var(--spacing-2xl) + 70px);
+  }
 }
 
 .hero {
   position: relative;
-  min-height: 90vh;
+  min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
-  padding: calc(var(--spacing-2xl) + 80px) 0 var(--spacing-2xl);
+  padding: var(--spacing-2xl) 0;
+  margin-top: 80px;
   overflow: hidden;
   background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
 }
@@ -514,9 +534,19 @@ a:hover {
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    min-height: 70px;
+  }
+  
+  .navbar__content {
+    min-height: 70px;
+    padding: var(--spacing-sm) 0;
+  }
+  
   .hero {
-    min-height: 80vh;
-    padding: calc(var(--spacing-2xl) + 60px) 0 var(--spacing-xl);
+    min-height: calc(100vh - 70px);
+    margin-top: 70px;
+    padding: var(--spacing-xl) 0;
   }
   
   .hero__title {
@@ -630,12 +660,15 @@ a:hover {
   backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid rgba(226, 232, 240, 0.5);
   transition: all var(--transition-base);
+  height: auto;
+  min-height: 80px;
 }
 
 .navbar--scrolled {
   background: rgba(255, 255, 255, 0.95);
   box-shadow: var(--shadow-md);
   border-bottom-color: rgba(226, 232, 240, 0.8);
+  min-height: 70px;
 }
 
 .navbar__content {
@@ -644,10 +677,12 @@ a:hover {
   justify-content: space-between;
   padding: var(--spacing-md) 0;
   transition: padding var(--transition-base);
+  min-height: 80px;
 }
 
 .navbar--scrolled .navbar__content {
   padding: var(--spacing-sm) 0;
+  min-height: 70px;
 }
 
 .navbar__logo {
