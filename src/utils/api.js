@@ -342,6 +342,69 @@ class APIClient {
             method: 'DELETE',
         });
     }
+
+    // Tags endpoints
+    async getTags(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/tags${query ? `?${query}` : ''}`);
+    }
+
+    async getTag(id) {
+        return this.request(`/api/tags/${id}`);
+    }
+
+    async createTag(data) {
+        return this.request('/api/tags', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateTag(id, data) {
+        return this.request(`/api/tags/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteTag(id) {
+        return this.request(`/api/tags/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    // Tag Rules endpoints
+    async getTagRules(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/tags/rules${query ? `?${query}` : ''}`);
+    }
+
+    async createTagRule(data) {
+        return this.request('/api/tags/rules', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateTagRule(id, data) {
+        return this.request(`/api/tags/rules/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteTagRule(id) {
+        return this.request(`/api/tags/rules/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
+    // Auto-tagging
+    async applyAutoTags(memberId) {
+        return this.request(`/api/tags/apply/${memberId}`, {
+            method: 'POST',
+        });
+    }
 }
 
 export const api = new APIClient();

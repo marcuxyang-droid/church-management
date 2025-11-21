@@ -84,6 +84,13 @@ const SHEETS = {
     'Users': [
         'id', 'member_id', 'email', 'password_hash', 'role', 'permissions',
         'line_user_id', 'last_login', 'created_at'
+    ],
+    'Tags': [
+        'id', 'name', 'category', 'color', 'description', 'status', 'created_at'
+    ],
+    'Tag_Rules': [
+        'id', 'name', 'tag_id', 'condition_type', 'condition_field', 'condition_operator',
+        'condition_value', 'priority', 'status', 'created_at'
     ]
 };
 

@@ -87,6 +87,19 @@ import {
     deleteMedia,
 } from './api/media.js';
 
+import {
+    getTags,
+    getTag,
+    createTag,
+    updateTag,
+    deleteTag,
+    getTagRules,
+    createTagRule,
+    updateTagRule,
+    deleteTagRule,
+    applyAutoTags,
+} from './api/tags.js';
+
 const app = new Hono();
 
 // Global middleware
@@ -199,6 +212,22 @@ app.get('/api/media/:id', authMiddleware, requirePermission('media:read'), getMe
 app.post('/api/media', authMiddleware, requirePermission('media:create'), createMedia);
 app.put('/api/media/:id', authMiddleware, requirePermission('media:update'), updateMedia);
 app.delete('/api/media/:id', authMiddleware, requirePermission('media:delete'), deleteMedia);
+
+// ===== Tags Routes =====
+app.get('/api/tags', authMiddleware, requirePermission('members:read'), getTags);
+app.get('/api/tags/:id', authMiddleware, requirePermission('members:read'), getTag);
+app.post('/api/tags', authMiddleware, requirePermission('members:update'), createTag);
+app.put('/api/tags/:id', authMiddleware, requirePermission('members:update'), updateTag);
+app.delete('/api/tags/:id', authMiddleware, requirePermission('members:delete'), deleteTag);
+
+// ===== Tag Rules Routes =====
+app.get('/api/tags/rules', authMiddleware, requirePermission('members:read'), getTagRules);
+app.post('/api/tags/rules', authMiddleware, requirePermission('members:update'), createTagRule);
+app.put('/api/tags/rules/:id', authMiddleware, requirePermission('members:update'), updateTagRule);
+app.delete('/api/tags/rules/:id', authMiddleware, requirePermission('members:delete'), deleteTagRule);
+
+// ===== Auto-tagging Routes =====
+app.post('/api/tags/apply/:memberId', authMiddleware, requirePermission('members:update'), applyAutoTags);
 
 app.notFound((c) => c.json({ error: 'Not Found' }, 404));
 

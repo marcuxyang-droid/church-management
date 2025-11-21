@@ -12,6 +12,7 @@ const menuItems = [
     { path: '/admin/finance', label: '財務管理', icon: '💳', permission: 'finance' },
     { path: '/admin/surveys', label: '問卷管理', icon: '📝', permission: 'surveys' },
     { path: '/admin/media', label: '媒體庫', icon: '🎥', permission: 'media' },
+    { path: '/admin/tags', label: '標籤管理', icon: '🏷️', permission: 'members' },
 ];
 
 export default function Sidebar() {

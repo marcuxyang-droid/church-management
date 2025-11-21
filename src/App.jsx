@@ -21,6 +21,7 @@ import Volunteers from './pages/admin/Volunteers';
 import Finance from './pages/admin/Finance';
 import Surveys from './pages/admin/Surveys';
 import Media from './pages/admin/Media';
+import Tags from './pages/admin/Tags';
 
 // Layout components
 import PublicLayout from './layouts/PublicLayout';
@@ -67,6 +68,7 @@ function App() {
                     <Route path="finance" element={<Finance />} />
                     <Route path="surveys" element={<Surveys />} />
                     <Route path="media" element={<Media />} />
+                    <Route path="tags" element={<Tags />} />
                 </Route>
 
                 {/* 404 */}

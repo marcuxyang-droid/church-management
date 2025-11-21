@@ -8,12 +8,14 @@ const columns = [
     { key: 'phone', label: '電話' },
     { key: 'email', label: '電子郵件' },
     { key: 'faith_status', label: '信仰狀態' },
+    { key: 'tags', label: '標籤' },
     { key: 'cell_group_id', label: '小組' },
     { key: 'join_date', label: '加入日期' },
 ];
 
 export default function Members() {
     const [members, setMembers] = useState([]);
+    const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
@@ -32,11 +34,22 @@ export default function Members() {
         tags: '',
         health_notes: '',
     });
+    const [selectedTags, setSelectedTags] = useState([]);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchMembers();
+        fetchTags();
     }, []);
+
+    const fetchTags = async () => {
+        try {
+            const data = await api.getTags();
+            setTags(data.tags || []);
+        } catch (err) {
+            console.error('Failed to fetch tags:', err);
+        }
+    };
 
     const fetchMembers = async () => {
         setLoading(true);
@@ -66,7 +79,11 @@ export default function Members() {
         setSubmitting(true);
         setError('');
         try {
-            await api.createMember(formData);
+            const submitData = {
+                ...formData,
+                tags: selectedTags.join(','),
+            };
+            await api.createMember(submitData);
             setIsModalOpen(false);
             setFormData({
                 name: '',
@@ -82,12 +99,27 @@ export default function Members() {
                 tags: '',
                 health_notes: '',
             });
+            setSelectedTags([]);
             fetchMembers();
         } catch (err) {
             setError(err.message || '建立會友失敗');
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const handleApplyAutoTags = async (memberId) => {
+        try {
+            await api.applyAutoTags(memberId);
+            fetchMembers();
+        } catch (err) {
+            setError(err.message || '自動貼標失敗');
+        }
+    };
+
+    const getMemberTags = (member) => {
+        if (!member.tags) return [];
+        return member.tags.split(',').filter(Boolean);
     };
 
     return (
@@ -147,7 +179,36 @@ export default function Members() {
                                 >
                                     {columns.map((column) => (
                                         <td key={column.key} className="py-3 pr-4">
-                                            {formatCell(member[column.key], column.key)}
+                                            {column.key === 'tags' ? (
+                                                <div className="flex flex-wrap gap-1">
+                                                    {getMemberTags(member).map(tagId => {
+                                                        const tag = tags.find(t => t.id === tagId);
+                                                        if (!tag) return null;
+                                                        return (
+                                                            <span
+                                                                key={tagId}
+                                                                className="px-2 py-1 text-xs rounded"
+                                                                style={{
+                                                                    backgroundColor: tag.color + '20',
+                                                                    color: tag.color,
+                                                                    border: `1px solid ${tag.color}40`,
+                                                                }}
+                                                            >
+                                                                {tag.name}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                    <button
+                                                        className="text-xs text-blue-600 hover:text-blue-800 ml-1"
+                                                        onClick={() => handleApplyAutoTags(member.id)}
+                                                        title="自動貼標"
+                                                    >
+                                                        +自動
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                formatCell(member[column.key], column.key)
+                                            )}
                                         </td>
                                     ))}
                                 </tr>
@@ -267,13 +328,39 @@ export default function Members() {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">標籤</label>
-                        <input
-                            type="text"
-                            className="input w-full"
-                            placeholder="用逗號分隔"
-                            value={formData.tags}
-                            onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                        />
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {tags.map(tag => (
+                                <label
+                                    key={tag.id}
+                                    className="flex items-center gap-2 px-3 py-1 rounded cursor-pointer border"
+                                    style={{
+                                        backgroundColor: selectedTags.includes(tag.id) ? tag.color + '20' : 'transparent',
+                                        borderColor: tag.color + '40',
+                                    }}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTags.includes(tag.id)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedTags([...selectedTags, tag.id]);
+                                            } else {
+                                                setSelectedTags(selectedTags.filter(id => id !== tag.id));
+                                            }
+                                        }}
+                                        className="sr-only"
+                                    />
+                                    <div
+                                        className="w-3 h-3 rounded"
+                                        style={{ backgroundColor: tag.color }}
+                                    />
+                                    <span className="text-sm">{tag.name}</span>
+                                </label>
+                            ))}
+                        </div>
+                        {tags.length === 0 && (
+                            <p className="text-sm text-gray-500">請先到「標籤管理」頁面創建標籤</p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">健康備註</label>
