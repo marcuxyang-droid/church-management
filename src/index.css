@@ -504,7 +504,7 @@ main > div > section:first-of-type:not(.hero) {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(248, 250, 255, 0.3) 0%, rgba(255, 255, 255, 0.5) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.75) 100%);
   z-index: 1;
 }
 
@@ -514,13 +514,17 @@ main > div > section:first-of-type:not(.hero) {
   max-width: 900px;
   margin: 0 auto;
   text-align: center;
-  padding: var(--spacing-2xl) 0;
+  padding: var(--spacing-2xl);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
 }
 
 .landing-hero__badge {
   display: inline-block;
   padding: 0.5rem 1.25rem;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(255, 255, 255, 0.95);
   color: var(--primary);
   font-size: 0.875rem;
   font-weight: 600;
@@ -528,6 +532,8 @@ main > div > section:first-of-type:not(.hero) {
   letter-spacing: 0.15em;
   border-radius: var(--radius-full);
   margin-bottom: var(--spacing-xl);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .landing-hero__heading {
@@ -536,10 +542,12 @@ main > div > section:first-of-type:not(.hero) {
   line-height: 1.2;
   margin-bottom: var(--spacing-lg);
   color: var(--text-primary);
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.8), 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .landing-hero__heading-main {
   display: block;
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.9), 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .landing-hero__heading-accent {
@@ -553,9 +561,11 @@ main > div > section:first-of-type:not(.hero) {
 .landing-hero__text {
   font-size: clamp(1.125rem, 2vw, 1.375rem);
   line-height: 1.7;
-  color: var(--text-primary);
+  color: #1a202c;
   max-width: 700px;
   margin: 0 auto var(--spacing-2xl);
+  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.9), 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
 }
 
 .landing-hero__actions {
@@ -1031,6 +1041,11 @@ main > div > section:first-of-type:not(.hero) {
     min-height: calc(100vh - 70px);
     margin-top: 70px;
     padding: var(--spacing-xl) 0;
+  }
+
+  .landing-hero__inner {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    margin: 0 var(--spacing-md);
   }
 
   .landing-hero__heading {
