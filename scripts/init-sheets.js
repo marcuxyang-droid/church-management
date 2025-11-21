@@ -13,9 +13,14 @@
 import { google } from 'googleapis';
 import fs from 'fs';
 
-// Load credentials
-const credentials = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS || fs.readFileSync('./credentials.json', 'utf8'));
-const SHEET_ID = process.env.GOOGLE_SHEET_ID || 'YOUR_SHEET_ID_HERE';
+// Load credentials from environment variable or file
+if (!process.env.GOOGLE_SHEETS_CREDENTIALS) {
+    console.error('錯誤: 請設定 GOOGLE_SHEETS_CREDENTIALS 環境變數');
+    console.error('或建立 credentials.json 檔案');
+    process.exit(1);
+}
+const credentials = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS);
+const SHEET_ID = process.env.GOOGLE_SHEET_ID || '1_zbYJMc_JqyLJ7DqxM6_iKnHVGJz1Q-cPmWQbJK1Af0';
 
 // Sheet definitions
 const SHEETS = {
