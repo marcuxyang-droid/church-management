@@ -31,14 +31,6 @@ export default function Sidebar() {
                 </Link>
             </div>
 
-            {user && (
-                <div className="sidebar__user">
-                    <p className="sidebar__user-label">登入身份</p>
-                    <p className="sidebar__user-name">{user.member?.name || user.email}</p>
-                    <p className="sidebar__user-role">{translateRole(user.role)}</p>
-                </div>
-            )}
-
             <nav className="sidebar__nav">
                 {menuItems.map((item) => {
                     if (item.permission && !hasPermission(item.permission)) return null;

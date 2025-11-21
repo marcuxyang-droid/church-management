@@ -27,17 +27,13 @@ export default function AdminLayout() {
                         borderBottom: '1px solid #e5e9f2',
                         background: '#fff',
                         display: 'flex',
-                        justifyContent: 'space-between',
+                        justifyContent: 'flex-end',
                         alignItems: 'center',
                         position: 'sticky',
                         top: 0,
                         zIndex: 10,
                     }}
                 >
-                    <div>
-                        <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-primary)' }}>控制台</h1>
-                        <p style={{ color: 'var(--text-secondary)' }}>管理會友、奉獻與所有教會活動</p>
-                    </div>
                     {user && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                             <span>{user.member?.name || user.email}</span>
