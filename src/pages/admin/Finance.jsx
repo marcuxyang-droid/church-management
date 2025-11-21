@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 const columns = [
     { key: 'date', label: '日期' },
@@ -15,6 +16,16 @@ export default function Finance() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [typeFilter, setTypeFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        type: 'income',
+        category: '',
+        amount: '',
+        date: new Date().toISOString().split('T')[0],
+        description: '',
+        receipt_url: '',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchTransactions();
@@ -38,6 +49,29 @@ export default function Finance() {
     const totalAmount = useMemo(() => {
         return transactions.reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
     }, [transactions]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createFinanceTransaction(formData);
+            setIsModalOpen(false);
+            setFormData({
+                type: 'income',
+                category: '',
+                amount: '',
+                date: new Date().toISOString().split('T')[0],
+                description: '',
+                receipt_url: '',
+            });
+            fetchTransactions();
+        } catch (err) {
+            setError(err.message || '建立財務記錄失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -64,7 +98,7 @@ export default function Finance() {
                     <button className="btn btn-outline" onClick={fetchTransactions} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增財務記錄</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增財務記錄</button>
                 </div>
             </div>
 
@@ -105,6 +139,87 @@ export default function Finance() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增財務記錄">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">類型 *</label>
+                            <select
+                                className="input w-full"
+                                value={formData.type}
+                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                required
+                            >
+                                <option value="income">收入</option>
+                                <option value="expense">支出</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">類別</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                value={formData.category}
+                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">金額 *</label>
+                            <input
+                                type="number"
+                                className="input w-full"
+                                value={formData.amount}
+                                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">日期 *</label>
+                            <input
+                                type="date"
+                                className="input w-full"
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">說明</label>
+                        <textarea
+                            className="input w-full"
+                            rows="3"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">收據 URL</label>
+                        <input
+                            type="url"
+                            className="input w-full"
+                            value={formData.receipt_url}
+                            onChange={(e) => setFormData({ ...formData, receipt_url: e.target.value })}
+                        />
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立記錄'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

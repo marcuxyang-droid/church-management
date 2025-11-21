@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 const columns = [
     { key: 'title', label: '標題' },
@@ -15,6 +16,17 @@ export default function Media() {
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [typeFilter, setTypeFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        title: '',
+        type: 'video',
+        url: '',
+        thumbnail_url: '',
+        date: new Date().toISOString().split('T')[0],
+        speaker: '',
+        tags: '',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchMedia();
@@ -44,6 +56,30 @@ export default function Media() {
                 .some((value) => value.toLowerCase().includes(keyword)),
         );
     }, [media, search]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createMedia(formData);
+            setIsModalOpen(false);
+            setFormData({
+                title: '',
+                type: 'video',
+                url: '',
+                thumbnail_url: '',
+                date: new Date().toISOString().split('T')[0],
+                speaker: '',
+                tags: '',
+            });
+            fetchMedia();
+        } catch (err) {
+            setError(err.message || '建立媒體失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -79,7 +115,7 @@ export default function Media() {
                     <button className="btn btn-outline" onClick={fetchMedia} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增媒體</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增媒體</button>
                 </div>
             </div>
 
@@ -125,6 +161,99 @@ export default function Media() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增媒體">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">標題 *</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.title}
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">類型 *</label>
+                            <select
+                                className="input w-full"
+                                value={formData.type}
+                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                required
+                            >
+                                <option value="video">影片</option>
+                                <option value="audio">音訊</option>
+                                <option value="document">文件</option>
+                                <option value="image">圖片</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">日期</label>
+                            <input
+                                type="date"
+                                className="input w-full"
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">URL *</label>
+                        <input
+                            type="url"
+                            className="input w-full"
+                            value={formData.url}
+                            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">縮圖 URL</label>
+                        <input
+                            type="url"
+                            className="input w-full"
+                            value={formData.thumbnail_url}
+                            onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">講員</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                value={formData.speaker}
+                                onChange={(e) => setFormData({ ...formData, speaker: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">標籤</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                placeholder="用逗號分隔"
+                                value={formData.tags}
+                                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立媒體'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

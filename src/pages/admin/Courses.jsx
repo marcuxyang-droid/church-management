@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 const columns = [
     { key: 'title', label: '課程名稱' },
@@ -16,6 +17,18 @@ export default function Courses() {
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        instructor: '',
+        sessions: '',
+        start_date: '',
+        end_date: '',
+        capacity: '',
+        status: 'draft',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchCourses();
@@ -43,6 +56,31 @@ export default function Courses() {
                 .some((value) => value.toLowerCase().includes(keyword)),
         );
     }, [courses, search]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createCourse(formData);
+            setIsModalOpen(false);
+            setFormData({
+                title: '',
+                description: '',
+                instructor: '',
+                sessions: '',
+                start_date: '',
+                end_date: '',
+                capacity: '',
+                status: 'draft',
+            });
+            fetchCourses();
+        } catch (err) {
+            setError(err.message || '建立課程失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -78,7 +116,7 @@ export default function Courses() {
                     <button className="btn btn-outline" onClick={fetchCourses} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增課程</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增課程</button>
                 </div>
             </div>
 
@@ -124,6 +162,105 @@ export default function Courses() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增課程">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">課程名稱 *</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.title}
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">講師</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.instructor}
+                            onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">課程描述</label>
+                        <textarea
+                            className="input w-full"
+                            rows="3"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">開始日期</label>
+                            <input
+                                type="date"
+                                className="input w-full"
+                                value={formData.start_date}
+                                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">結束日期</label>
+                            <input
+                                type="date"
+                                className="input w-full"
+                                value={formData.end_date}
+                                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">節數</label>
+                            <input
+                                type="number"
+                                className="input w-full"
+                                value={formData.sessions}
+                                onChange={(e) => setFormData({ ...formData, sessions: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">人數上限</label>
+                            <input
+                                type="number"
+                                className="input w-full"
+                                value={formData.capacity}
+                                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">狀態</label>
+                        <select
+                            className="input w-full"
+                            value={formData.status}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        >
+                            <option value="draft">草稿</option>
+                            <option value="published">已發布</option>
+                            <option value="ongoing">進行中</option>
+                            <option value="completed">已完成</option>
+                        </select>
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立課程'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

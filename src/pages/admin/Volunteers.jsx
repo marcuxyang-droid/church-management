@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 const columns = [
     { key: 'member_id', label: '會友 ID' },
@@ -16,6 +17,14 @@ export default function Volunteers() {
     const [search, setSearch] = useState('');
     const [teamFilter, setTeamFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        member_id: '',
+        team: '',
+        role: '',
+        status: 'active',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchVolunteers();
@@ -51,6 +60,22 @@ export default function Volunteers() {
         const uniqueTeams = [...new Set(volunteers.map(v => v.team).filter(Boolean))];
         return uniqueTeams;
     }, [volunteers]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createVolunteer(formData);
+            setIsModalOpen(false);
+            setFormData({ member_id: '', team: '', role: '', status: 'active' });
+            fetchVolunteers();
+        } catch (err) {
+            setError(err.message || '建立志工失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -97,7 +122,7 @@ export default function Volunteers() {
                     <button className="btn btn-outline" onClick={fetchVolunteers} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增志工</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增志工</button>
                 </div>
             </div>
 
@@ -143,6 +168,67 @@ export default function Volunteers() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增志工">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">會友 ID *</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.member_id}
+                            onChange={(e) => setFormData({ ...formData, member_id: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">團隊 *</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                placeholder="例如：敬拜、招待"
+                                value={formData.team}
+                                onChange={(e) => setFormData({ ...formData, team: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">角色</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                value={formData.role}
+                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">狀態</label>
+                        <select
+                            className="input w-full"
+                            value={formData.status}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        >
+                            <option value="active">進行中</option>
+                            <option value="inactive">暫停</option>
+                        </select>
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立志工'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

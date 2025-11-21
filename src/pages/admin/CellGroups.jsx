@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 const columns = [
     { key: 'name', label: '小組名稱' },
@@ -15,6 +16,16 @@ export default function CellGroups() {
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        leader_id: '',
+        co_leaders: '',
+        meeting_time: '',
+        location: '',
+        status: 'active',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchGroups();
@@ -42,6 +53,22 @@ export default function CellGroups() {
                 .some((value) => value.toLowerCase().includes(keyword)),
         );
     }, [groups, search]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createCellGroup(formData);
+            setIsModalOpen(false);
+            setFormData({ name: '', leader_id: '', co_leaders: '', meeting_time: '', location: '', status: 'active' });
+            fetchGroups();
+        } catch (err) {
+            setError(err.message || '建立小組失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -75,7 +102,7 @@ export default function CellGroups() {
                     <button className="btn btn-outline" onClick={fetchGroups} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增小組</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增小組</button>
                 </div>
             </div>
 
@@ -121,6 +148,86 @@ export default function CellGroups() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增小組">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">小組名稱 *</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">小組長 ID</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                value={formData.leader_id}
+                                onChange={(e) => setFormData({ ...formData, leader_id: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">副組長</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                value={formData.co_leaders}
+                                onChange={(e) => setFormData({ ...formData, co_leaders: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">聚會時間</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                placeholder="例如：每週三 19:30"
+                                value={formData.meeting_time}
+                                onChange={(e) => setFormData({ ...formData, meeting_time: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">地點</label>
+                            <input
+                                type="text"
+                                className="input w-full"
+                                value={formData.location}
+                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">狀態</label>
+                        <select
+                            className="input w-full"
+                            value={formData.status}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        >
+                            <option value="active">進行中</option>
+                            <option value="inactive">暫停</option>
+                        </select>
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立小組'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

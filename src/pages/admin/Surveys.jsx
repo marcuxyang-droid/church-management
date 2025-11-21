@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
+import Modal from '../../components/Modal';
 
 const columns = [
     { key: 'title', label: '問卷標題' },
@@ -13,6 +14,13 @@ export default function Surveys() {
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        status: 'draft',
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchSurveys();
@@ -40,6 +48,22 @@ export default function Surveys() {
                 .some((value) => value.toLowerCase().includes(keyword)),
         );
     }, [surveys, search]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await api.createSurvey(formData);
+            setIsModalOpen(false);
+            setFormData({ title: '', description: '', status: 'draft' });
+            fetchSurveys();
+        } catch (err) {
+            setError(err.message || '建立問卷失敗');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -74,7 +98,7 @@ export default function Surveys() {
                     <button className="btn btn-outline" onClick={fetchSurveys} disabled={loading}>
                         重新整理
                     </button>
-                    <button className="btn btn-primary">新增問卷</button>
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>新增問卷</button>
                 </div>
             </div>
 
@@ -120,6 +144,55 @@ export default function Surveys() {
                     </table>
                 )}
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="新增問卷">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">問卷標題 *</label>
+                        <input
+                            type="text"
+                            className="input w-full"
+                            value={formData.title}
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">問卷描述</label>
+                        <textarea
+                            className="input w-full"
+                            rows="4"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">狀態</label>
+                        <select
+                            className="input w-full"
+                            value={formData.status}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        >
+                            <option value="draft">草稿</option>
+                            <option value="published">已發布</option>
+                            <option value="closed">已關閉</option>
+                        </select>
+                    </div>
+                    <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={submitting}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className="btn btn-primary" disabled={submitting}>
+                            {submitting ? '建立中...' : '建立問卷'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }
