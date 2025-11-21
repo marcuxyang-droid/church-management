@@ -350,6 +350,145 @@ a:hover {
   padding-top: calc(var(--spacing-2xl) + 80px);
 }
 
+/* About Hero Section - Unified Design */
+.about-hero {
+  position: relative;
+  padding: calc(var(--spacing-2xl) + 80px) 0 var(--spacing-2xl);
+  background: linear-gradient(180deg, #f8faff 0%, #ffffff 30%, #1a202c 30%, #1a202c 100%);
+  overflow: hidden;
+}
+
+.about-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+  z-index: 0;
+}
+
+.about-hero::after {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #1a202c;
+  z-index: 0;
+}
+
+.about-hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+.about-hero__header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-2xl);
+}
+
+.about-hero__title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.2;
+}
+
+.about-hero__description {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.about-hero__missions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-2xl);
+  padding-top: var(--spacing-2xl);
+}
+
+.mission-card {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-base);
+  animation: fadeInUp 0.6s ease-out both;
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+}
+
+.mission-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.mission-card:hover::before {
+  transform: scaleX(1);
+}
+
+.mission-card__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.mission-card__description {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .about-hero {
+    padding: calc(var(--spacing-2xl) + 70px) 0 var(--spacing-xl);
+    background: linear-gradient(180deg, #f8faff 0%, #ffffff 25%, #1a202c 25%, #1a202c 100%);
+  }
+  
+  .about-hero::before {
+    height: 25%;
+  }
+  
+  .about-hero::after {
+    top: 25%;
+  }
+  
+  .about-hero__missions {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-xl);
+  }
+  
+  .mission-card {
+    padding: var(--spacing-xl);
+  }
+}
+
 /* Ensure first section on non-hero pages has proper spacing */
 main > div > section:first-of-type:not(.hero) {
   padding-top: calc(var(--spacing-2xl) + 80px);

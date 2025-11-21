@@ -30,24 +30,23 @@ const ministries = [
 export default function About() {
     return (
         <div>
-            <section className="section-contrast">
-                <div className="container text-center">
-                    <h1 className="text-4xl font-bold mb-4">關於 Blessing Haven</h1>
-                    <p className="text-lg max-w-2xl mx-auto">
-                        我們盼望每個人都能在這裡被愛、被建立、被差派。這裡不只是聚會，更是同行的家。
-                    </p>
-                </div>
-            </section>
-
-            <section className="section">
-                <div className="container">
-                    <div className="grid grid-3">
-                        {mission.map((item) => (
-                            <div key={item.title} className="card">
-                                <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
-                                <p className="text-text-secondary">{item.description}</p>
-                            </div>
-                        ))}
+            <section className="about-hero">
+                <div className="about-hero__content">
+                    <div className="container">
+                        <div className="about-hero__header">
+                            <h1 className="about-hero__title">關於 Blessing Haven</h1>
+                            <p className="about-hero__description">
+                                我們盼望每個人都能在這裡被愛、被建立、被差派。這裡不只是聚會，更是同行的家。
+                            </p>
+                        </div>
+                        <div className="about-hero__missions">
+                            {mission.map((item, index) => (
+                                <div key={item.title} className="mission-card" style={{ animationDelay: `${index * 0.1}s` }}>
+                                    <h3 className="mission-card__title">{item.title}</h3>
+                                    <p className="mission-card__description">{item.description}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
