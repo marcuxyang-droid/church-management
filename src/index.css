@@ -1280,7 +1280,7 @@ main > div > section:first-of-type:not(.hero) {
 }
 
 .navbar__link {
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 0.9375rem;
   padding: var(--spacing-sm) var(--spacing-md);
