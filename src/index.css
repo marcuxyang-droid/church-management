@@ -658,7 +658,7 @@ main > div > section:first-of-type:not(.hero) {
 
 .landing-stats__detail {
   font-size: 0.875rem;
-  color: var(--text-tertiary);
+  color: var(--text-primary);
 }
 
 /* Features Section */
@@ -681,7 +681,7 @@ main > div > section:first-of-type:not(.hero) {
 
 .landing-features__subtitle {
   font-size: 1.125rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   max-width: 600px;
   margin: 0 auto;
 }
@@ -721,7 +721,7 @@ main > div > section:first-of-type:not(.hero) {
 }
 
 .landing-features__card-text {
-  color: var(--text-secondary);
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
@@ -747,7 +747,7 @@ main > div > section:first-of-type:not(.hero) {
 .landing-about__text {
   font-size: 1.125rem;
   line-height: 1.7;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   margin-bottom: var(--spacing-xl);
 }
 
@@ -794,7 +794,7 @@ main > div > section:first-of-type:not(.hero) {
 
 .landing-events__subtitle {
   font-size: 1.125rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .landing-events__link {
@@ -864,7 +864,7 @@ main > div > section:first-of-type:not(.hero) {
 }
 
 .landing-events__card-description {
-  color: var(--text-secondary);
+  color: var(--text-primary);
   line-height: 1.6;
   margin-bottom: var(--spacing-md);
   flex: 1;
@@ -880,7 +880,7 @@ main > div > section:first-of-type:not(.hero) {
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-lg);
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .landing-events__card-info-item {
@@ -931,7 +931,7 @@ main > div > section:first-of-type:not(.hero) {
 
 .landing-testimonials__subtitle {
   font-size: 1.125rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   max-width: 600px;
   margin: 0 auto;
 }
@@ -967,7 +967,7 @@ main > div > section:first-of-type:not(.hero) {
 .landing-testimonials__author {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-tertiary);
+  color: var(--text-primary);
 }
 
 /* CTA Section */
