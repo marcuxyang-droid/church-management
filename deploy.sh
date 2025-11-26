@@ -2,6 +2,24 @@
 
 # Church Management System - Deployment Script
 
+# Always run from the repo root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
+
+STAMP_FILE="$SCRIPT_DIR/.deploystamp"
+EXPECTED_STAMP="CHURCH_MANAGEMENT_V1"
+
+if [ ! -f "$STAMP_FILE" ]; then
+  echo "❌ Missing deployment stamp (.deploystamp). Please use the V1 project root."
+  exit 1
+fi
+
+STAMP_CONTENT="$(tr -d '\r\n\t ' < "$STAMP_FILE")"
+if [ "$STAMP_CONTENT" != "$EXPECTED_STAMP" ]; then
+  echo "❌ Deployment stamp mismatch. Expected $EXPECTED_STAMP but found '$STAMP_CONTENT'."
+  exit 1
+fi
+
 echo "🚀 Deploying Church Management System..."
 
 # Check if required environment variables are set

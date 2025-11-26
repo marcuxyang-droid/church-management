@@ -1,5 +1,22 @@
 # Church Management System - Deployment Script (PowerShell)
 
+$scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $scriptRoot
+
+$stampFile = Join-Path $scriptRoot ".deploystamp"
+$expectedStamp = "CHURCH_MANAGEMENT_V1"
+
+if (-not (Test-Path $stampFile)) {
+    Write-Host "❌ Missing deployment stamp (.deploystamp). Please use the V1 project root." -ForegroundColor Red
+    exit 1
+}
+
+$stampContent = (Get-Content $stampFile -Raw).Trim()
+if ($stampContent -ne $expectedStamp) {
+    Write-Host "❌ Deployment stamp mismatch. Expected $expectedStamp but found '$stampContent'." -ForegroundColor Red
+    exit 1
+}
+
 Write-Host "🚀 Deploying Church Management System..." -ForegroundColor Cyan
 
 # Check if required environment variables are set

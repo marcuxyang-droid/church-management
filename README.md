@@ -98,24 +98,26 @@ npm run dev
 
 ### 6. 部署
 
-#### 部署前端到 Cloudflare Pages
+#### 一鍵部署（建議）
+
+為避免錯誤部署舊版程式，請在專案根目錄執行 `./deploy.ps1`（Windows/PowerShell）或 `bash ./deploy.sh`（macOS/Linux）。腳本會：
+
+1. 確認目前目錄含 `.deploystamp`（僅 V1 擁有）後才允許部署
+2. 建置前端 `npm run build`
+3. 部署 Workers (`cd workers && npm run deploy`)
+4. 將 `dist/` 釋出到 Cloudflare Pages Production Branch
+
+若腳本偵測不到 `.deploystamp`，代表你不在最新專案根目錄，部署會被拒絕。
+
+#### 手動部署（如需拆步驟）
 
 ```bash
+# 前端
 npm run build
-npx wrangler pages deploy dist --project-name=church-management
-```
+npx wrangler pages deploy dist --project-name=church-management --branch=production
 
-#### 部署後端到 Cloudflare Workers
-
-```bash
+# 後端
 cd workers
-
-# 設定 secrets
-npx wrangler secret put GOOGLE_SHEETS_CREDENTIALS
-npx wrangler secret put RESEND_API_KEY
-npx wrangler secret put JWT_SECRET
-
-# 部署
 npm run deploy
 ```
 

@@ -107,6 +107,10 @@ npx wrangler secret put JWT_SECRET
 
 #### 部署
 
+**建議**：直接在專案根目錄執行 `./deploy.ps1` 或 `bash ./deploy.sh`。腳本會驗證 `.deploystamp`、建置前端、部署 Workers 以及發佈到 Pages Production Branch，能避免誤用舊版專案資料夾。
+
+**若需手動操作**：
+
 ```bash
 # 部署 Workers
 cd workers
@@ -115,7 +119,7 @@ npm run deploy
 # 部署 Pages
 cd ..
 npm run build
-npx wrangler pages deploy dist --project-name=church-management
+npx wrangler pages deploy dist --project-name=church-management --branch=production
 ```
 
 ### 第七步：配置自訂網域（選用）
