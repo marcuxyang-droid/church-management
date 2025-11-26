@@ -1,0 +1,19 @@
+name = "church-management"
+main = "src/index-minimal.js"
+compatibility_date = "2024-01-01"
+node_compat = true
+
+# Account configuration
+account_id = "d9be70f4ad07e87f515c30366ec0ad88"
+
+# Environment variables
+[vars]
+GOOGLE_SHEET_ID = "1_zbYJMc_JqyLJ7DqxM6_iKnHVGJz1Q-cPmWQbJK1Af0"
+EMAIL_FROM = "notify@blessing-haven.club"
+EMAIL_FROM_NAME = "Church Management"
+ENVIRONMENT = "production"
+
+# Secrets (already set via wrangler secret put)
+# - GOOGLE_SHEETS_CREDENTIALS
+# - RESEND_API_KEY
+# - JWT_SECRET

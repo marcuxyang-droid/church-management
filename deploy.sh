@@ -1,0 +1,53 @@
+﻿#!/bin/bash
+
+# Church Management System - Deployment Script
+
+echo "🚀 Deploying Church Management System..."
+
+# Check if required environment variables are set
+if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+  echo "❌ Error: CLOUDFLARE_API_TOKEN not set"
+  exit 1
+fi
+
+# Ensure API endpoint is available for frontend build
+if [ -z "$VITE_API_URL" ]; then
+  export VITE_API_URL="https://church-management.marcuxyang.workers.dev"
+  echo "ℹ️  VITE_API_URL not provided. Defaulting to $VITE_API_URL"
+else
+  echo "ℹ️  Using VITE_API_URL=$VITE_API_URL"
+fi
+
+# Build frontend
+echo "📦 Building frontend..."
+npm run build
+
+if [ $? -ne 0 ]; then
+  echo "❌ Frontend build failed"
+  exit 1
+fi
+
+# Deploy to Cloudflare Pages (production branch)
+echo "🌐 Deploying frontend to Cloudflare Pages (production)..."
+npx wrangler pages deploy dist --project-name=church-management --branch=production
+
+if [ $? -ne 0 ]; then
+  echo "❌ Frontend deployment failed"
+  exit 1
+fi
+
+# Deploy Workers
+echo "⚙️  Deploying backend to Cloudflare Workers..."
+cd workers
+npm run deploy
+
+if [ $? -ne 0 ]; then
+  echo "❌ Backend deployment failed"
+  exit 1
+fi
+
+cd ..
+
+echo "✅ Deployment complete!"
+echo "📊 Frontend: https://church-management.pages.dev"
+echo "⚙️  Backend: https://church-management.your-subdomain.workers.dev"

@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+workers/node_modules/
+scripts/node_modules/
+
+# Build outputs
+dist/
+workers/dist/
+
+# Environment / credentials
+.env
+workers/.dev.vars
+scripts/credentials.json
+workers/temp-creds.json
+workers/temp-resend.txt
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+.DS_Store
+Thumbs.db
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.dev.vars
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Wrangler
+.wrangler/
+wrangler.toml.backup
+
+# Cloudflare
+.dev.vars
+worker-configuration.d.ts

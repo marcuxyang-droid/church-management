@@ -1,0 +1,19 @@
+{
+    "name": "church-management-workers",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "wrangler dev",
+        "deploy": "wrangler deploy",
+        "tail": "wrangler tail"
+    },
+    "dependencies": {
+        "hono": "^4.0.0",
+        "js-sha256": "^0.11.1",
+        "qrcode": "^1.5.3",
+        "uuid": "^9.0.1"
+    },
+    "devDependencies": {
+        "wrangler": "^3.28.0"
+    }
+}
