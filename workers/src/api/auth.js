@@ -84,7 +84,7 @@ export async function login(c) {
         currentUser.last_login = new Date().toISOString();
         await updateUserRow(sheets, allUsers, currentUser);
 
-        // Generate JWT token (30 minutes expiration)
+        // Generate JWT token
         const token = await generateToken({
             user_id: user.id,
             member_id: user.member_id,
@@ -92,7 +92,7 @@ export async function login(c) {
             role: user.role,
             permissions: effectivePermissions,
             must_change_password: user.must_change_password === 'true',
-        }, c.env.JWT_SECRET, 1800); // 30 分鐘 = 1800 秒
+        }, c.env.JWT_SECRET);
 
         return c.json({
             token,
@@ -289,7 +289,7 @@ export async function refreshToken(c) {
             return c.json({ error: '未登入' }, 401);
         }
 
-        // Generate new token (30 minutes expiration)
+        // Generate new token
         const token = await generateToken({
             user_id: user.user_id,
             member_id: user.member_id,
@@ -297,7 +297,7 @@ export async function refreshToken(c) {
             role: user.role,
             permissions: user.permissions || [],
             must_change_password: user.must_change_password,
-        }, c.env.JWT_SECRET, 1800); // 30 分鐘 = 1800 秒
+        }, c.env.JWT_SECRET);
 
         return c.json({ token });
     } catch (error) {

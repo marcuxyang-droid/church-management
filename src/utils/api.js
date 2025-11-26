@@ -412,6 +412,10 @@ class APIClient {
         return this.request('/api/settings');
     }
 
+    async getPublicSettings() {
+        return this.request('/api/settings/public');
+    }
+
     async updateSettings(data) {
         return this.request('/api/settings', {
             method: 'PUT',
@@ -425,6 +429,54 @@ class APIClient {
         return this.request('/api/settings/logo', {
             method: 'POST',
             body: formData,
+        });
+    }
+
+    async uploadHeroImage(file, type = 'bg') {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', type);
+        return this.request('/api/settings/hero-image', {
+            method: 'POST',
+            body: formData,
+        });
+    }
+
+    async listUploadedImages() {
+        return this.request('/api/settings/images');
+    }
+
+    async getSettingsStructure() {
+        return this.request('/api/debug/settings-structure');
+    }
+
+    // News endpoints
+    async getNews(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return this.request(`/api/news${query ? `?${query}` : ''}`);
+    }
+
+    async getNewsItem(id) {
+        return this.request(`/api/news/${id}`);
+    }
+
+    async createNews(data) {
+        return this.request('/api/news', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateNews(id, data) {
+        return this.request(`/api/news/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteNews(id) {
+        return this.request(`/api/news/${id}`, {
+            method: 'DELETE',
         });
     }
 

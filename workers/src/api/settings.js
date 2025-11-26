@@ -10,8 +10,9 @@ const DEFAULT_SETTINGS = {
     logo_url: '',
     facebook_url: '',
     youtube_url: '',
-    hero_heading_main: '我們盼望每個人都能在這裡',
+    hero_heading_main: '盼望每個人都能在這裡',
     hero_heading_accent: '被愛、被建立、被差派',
+    hero_button_text: '加入Blessing Haven',
     hero_bg_url: '',
     hero_arc_image_url: '',
 };
@@ -60,34 +61,6 @@ async function upsertSettings(sheets, updates, updatedBy) {
     }
 }
 
-/**
- * Get public settings (no authentication required)
- * GET /api/settings/public
- */
-export async function getPublicSettings(c) {
-    try {
-        const sheets = new SheetsService(c.env);
-        const rows = await sheets.read('Settings');
-        const { settings } = normalizeSettings(rows);
-
-        // Only return public-facing settings
-        const publicSettings = {
-            church_name: settings.church_name || '',
-            tagline: settings.tagline || '',
-            logo_url: settings.logo_url || '',
-            hero_bg_url: settings.hero_bg_url || '',
-            hero_arc_image_url: settings.hero_arc_image_url || '',
-            hero_heading_main: settings.hero_heading_main || '',
-            hero_heading_accent: settings.hero_heading_accent || '',
-        };
-
-        return c.json({ settings: publicSettings });
-    } catch (error) {
-        console.error('Get public settings error:', error);
-        return c.json({ error: '獲取系統設定失敗' }, 500);
-    }
-}
-
 export async function getSettings(c) {
     try {
         const sheets = new SheetsService(c.env);
@@ -97,6 +70,36 @@ export async function getSettings(c) {
         return c.json({ settings, meta });
     } catch (error) {
         console.error('Get settings error:', error);
+        return c.json({ error: '獲取系統設定失敗' }, 500);
+    }
+}
+
+export async function getPublicSettings(c) {
+    try {
+        const sheets = new SheetsService(c.env);
+        const rows = await sheets.read('Settings');
+        const { settings } = normalizeSettings(rows);
+
+        // 只返回前台需要的公开设置，不包含敏感信息
+        const publicSettings = {
+            church_name: settings.church_name || '',
+            tagline: settings.tagline || '',
+            contact_email: settings.contact_email || '',
+            address: settings.address || '',
+            service_times: settings.service_times || '',
+            logo_url: settings.logo_url || '',
+            facebook_url: settings.facebook_url || '',
+            youtube_url: settings.youtube_url || '',
+            hero_heading_main: settings.hero_heading_main || '',
+            hero_heading_accent: settings.hero_heading_accent || '',
+            hero_button_text: settings.hero_button_text || '',
+            hero_bg_url: settings.hero_bg_url || '',
+            hero_arc_image_url: settings.hero_arc_image_url || '',
+        };
+
+        return c.json({ settings: publicSettings });
+    } catch (error) {
+        console.error('Get public settings error:', error);
         return c.json({ error: '獲取系統設定失敗' }, 500);
     }
 }
@@ -244,153 +247,37 @@ export async function listUploadedImages(c) {
         }
 
         const publicBaseUrl = getMediaBaseUrl(c);
-        console.log('[listUploadedImages] Public base URL:', publicBaseUrl);
+        const r2 = new R2Service(c.env.MEDIA_BUCKET, { publicBaseUrl });
         
-        // List all images from R2 bucket
+        // List images from settings and hero folders
         const images = [];
+        const prefixes = ['settings/', 'hero/'];
         
-        try {
-            // List all objects in the bucket (no prefix filter to get everything)
-            let listed = await c.env.MEDIA_BUCKET.list();
-            console.log('[listUploadedImages] Total objects found:', listed.objects?.length || 0);
-            if (listed.objects && listed.objects.length > 0) {
-                console.log('[listUploadedImages] Sample keys:', listed.objects.slice(0, 5).map(obj => obj.key));
-            }
-            
-            // Handle pagination if needed
-            while (listed) {
-                if (listed.objects && Array.isArray(listed.objects)) {
-                    console.log('[listUploadedImages] Processing batch of', listed.objects.length, 'objects');
-                    for (const obj of listed.objects) {
-                        console.log('[listUploadedImages] Checking object:', obj.key, 'Size:', obj.size);
-                        
-                        // Check if it's an image by extension or by getting metadata
-                        const isImageByExtension = obj.key && obj.key.match(/\.(png|jpg|jpeg|webp|svg|blob)$/i);
-                        let isImage = isImageByExtension;
-                        
-                        // If extension doesn't match but we want to check MIME type, get object metadata
-                        if (!isImageByExtension && obj.key) {
-                            try {
-                                const r2Obj = await c.env.MEDIA_BUCKET.head(obj.key);
-                                if (r2Obj && r2Obj.httpMetadata && r2Obj.httpMetadata.contentType) {
-                                    const contentType = r2Obj.httpMetadata.contentType;
-                                    isImage = contentType.startsWith('image/');
-                                    console.log('[listUploadedImages] Object', obj.key, 'has content type:', contentType, 'isImage:', isImage);
-                                }
-                            } catch (headErr) {
-                                console.warn('[listUploadedImages] Could not get metadata for', obj.key, ':', headErr.message);
-                            }
-                        }
-                        
-                        if (isImage) {
-                            let uploadedAt;
-                            
-                            if (obj.uploaded) {
-                                if (obj.uploaded instanceof Date) {
-                                    uploadedAt = obj.uploaded.toISOString();
-                                } else if (typeof obj.uploaded === 'string') {
-                                    uploadedAt = obj.uploaded;
-                                } else if (typeof obj.uploaded === 'number') {
-                                    uploadedAt = new Date(obj.uploaded).toISOString();
-                                } else {
-                                    uploadedAt = new Date(obj.uploaded).toISOString();
-                                }
-                            } else {
-                                uploadedAt = new Date().toISOString();
-                            }
-                            
-                            // Build URL - encode the key properly for path segments
-                            const encodedKey = obj.key.split('/').map(segment => encodeURIComponent(segment)).join('/');
-                            const imageUrl = `${publicBaseUrl}/${encodedKey}`;
-                            
-                            console.log('[listUploadedImages] Found image:', obj.key, '->', imageUrl);
-                            
-                            images.push({
-                                url: imageUrl,
-                                key: obj.key,
-                                uploadedAt: uploadedAt,
-                            });
-                        } else {
-                            console.log('[listUploadedImages] Skipping non-image:', obj.key);
-                        }
-                    }
-                }
+        for (const prefix of prefixes) {
+            try {
+                const listed = await r2.list(prefix);
+                console.log(`Listed ${prefix}:`, listed.length, 'files');
                 
-                // Check if there are more results
-                if (listed.truncated && listed.cursor) {
-                    console.log('[listUploadedImages] More results available, fetching next page...');
-                    listed = await c.env.MEDIA_BUCKET.list({ cursor: listed.cursor });
-                } else {
-                    break;
-                }
-            }
-        } catch (err) {
-            console.error('[listUploadedImages] Error listing R2 objects:', err);
-            // Try with specific prefixes as fallback
-            const prefixes = ['settings/', 'hero/', 'hero/bg/', 'hero/arc/', 'hero/images/', 'uploads/'];
-            for (const prefix of prefixes) {
-                try {
-                    console.log('[listUploadedImages] Trying prefix:', prefix);
-                    const listed = await c.env.MEDIA_BUCKET.list({ prefix });
-                    if (listed && listed.objects) {
-                        console.log('[listUploadedImages] Found', listed.objects.length, 'objects with prefix', prefix);
-                        if (listed.objects.length > 0) {
-                            console.log('[listUploadedImages] Sample keys with prefix', prefix, ':', listed.objects.slice(0, 3).map(obj => obj.key));
-                        }
-                        for (const obj of listed.objects) {
-                            console.log('[listUploadedImages] Checking object with prefix', prefix, ':', obj.key);
-                            
-                            // Check if it's an image by extension (including .blob) or by MIME type
-                            const isImageByExtension = obj.key && obj.key.match(/\.(png|jpg|jpeg|webp|svg|blob)$/i);
-                            let isImage = isImageByExtension;
-                            
-                            // If extension doesn't match, try to check MIME type
-                            if (!isImageByExtension && obj.key) {
-                                try {
-                                    const r2Obj = await c.env.MEDIA_BUCKET.head(obj.key);
-                                    if (r2Obj && r2Obj.httpMetadata && r2Obj.httpMetadata.contentType) {
-                                        const contentType = r2Obj.httpMetadata.contentType;
-                                        isImage = contentType.startsWith('image/');
-                                        console.log('[listUploadedImages] Object', obj.key, 'has content type:', contentType);
-                                    }
-                                } catch (headErr) {
-                                    // Silently continue if we can't get metadata
-                                }
-                            }
-                            
-                            if (isImage) {
-                                const uploadedAt = obj.uploaded 
-                                    ? (obj.uploaded instanceof Date 
-                                        ? obj.uploaded.toISOString() 
-                                        : typeof obj.uploaded === 'string' 
-                                            ? obj.uploaded 
-                                            : new Date(obj.uploaded).toISOString())
-                                    : new Date().toISOString();
-                                
-                                // Avoid duplicates
-                                if (!images.find(img => img.key === obj.key)) {
-                                    const encodedKey = obj.key.split('/').map(segment => encodeURIComponent(segment)).join('/');
-                                    const imageUrl = `${publicBaseUrl}/${encodedKey}`;
-                                    images.push({
-                                        url: imageUrl,
-                                        key: obj.key,
-                                        uploadedAt: uploadedAt,
-                                    });
-                                }
-                            }
-                        }
+                for (const obj of listed) {
+                    if (obj.key && obj.key.match(/\.(png|jpg|jpeg|webp|svg)$/i)) {
+                        const imageUrl = `${publicBaseUrl}/${encodeURIComponent(obj.key)}`;
+                        images.push({
+                            url: imageUrl,
+                            key: obj.key,
+                            uploadedAt: obj.uploaded?.toISOString() || new Date().toISOString(),
+                        });
                     }
-                } catch (prefixErr) {
-                    console.error(`[listUploadedImages] Error listing ${prefix}:`, prefixErr);
                 }
+            } catch (err) {
+                console.error(`Error listing ${prefix}:`, err);
             }
         }
 
-        console.log('[listUploadedImages] Returning', images.length, 'images');
+        console.log(`Total images found: ${images.length}`);
         return c.json({ images: images.sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt)) });
     } catch (error) {
-        console.error('[listUploadedImages] List images error:', error);
-        return c.json({ error: '獲取圖片列表失敗: ' + error.message }, 500);
+        console.error('List images error:', error);
+        return c.json({ error: '獲取圖片列表失敗', details: error.message }, 500);
     }
 }
 

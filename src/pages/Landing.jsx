@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../utils/api';
 import { useSettingsStore } from '../store/settings';
+import NewcomerModal from '../components/NewcomerModal';
+import NewsDetailModal from '../components/NewsDetailModal';
 
 const features = [
     {
@@ -48,16 +50,23 @@ const testimonials = [
     },
 ];
 
+
 export default function Landing() {
     const [events, setEvents] = useState([]);
     const [loadingEvents, setLoadingEvents] = useState(true);
+    const [news, setNews] = useState([]);
+    const [loadingNews, setLoadingNews] = useState(true);
+    const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
+    const [showNewcomerModal, setShowNewcomerModal] = useState(false);
+    const [showNewsModal, setShowNewsModal] = useState(false);
+    const [selectedNews, setSelectedNews] = useState(null);
     const settings = useSettingsStore((state) => state.settings);
     const fetchSettings = useSettingsStore((state) => state.fetchSettings);
 
     useEffect(() => {
         async function fetchEvents() {
             try {
-                const data = await api.getEvents({ upcoming: 'true' });
+                const data = await api.getEvents({ upcoming: 'true', status: 'published' });
                 setEvents((data.events || []).sort((a, b) => new Date(a.start_date) - new Date(b.start_date)));
             } finally {
                 setLoadingEvents(false);
@@ -67,41 +76,217 @@ export default function Landing() {
     }, []);
 
     useEffect(() => {
+        async function fetchNews() {
+            try {
+                setLoadingNews(true);
+                const data = await api.getNews({ status: 'published' });
+                const publishedNews = (data.news || []).filter(item => item.status === 'published');
+                setNews(publishedNews.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
+            } catch (err) {
+                console.error('Failed to fetch news:', err);
+                setNews([]);
+            } finally {
+                setLoadingNews(false);
+            }
+        }
+        fetchNews();
+    }, []);
+
+    useEffect(() => {
         if (!settings) {
             fetchSettings();
         }
     }, [settings, fetchSettings]);
 
+    useEffect(() => {
+        console.log('[Landing] showNewcomerModal changed:', showNewcomerModal);
+    }, [showNewcomerModal]);
+
+    useEffect(() => {
+        console.log('[Landing] showNewsModal changed:', showNewsModal, 'selectedNews:', selectedNews);
+    }, [showNewsModal, selectedNews]);
+
+    const handleOpenNewcomerModal = () => {
+        console.log('[Landing] handleOpenNewcomerModal');
+        setShowNewcomerModal(true);
+    };
+
+    const handleOpenNewsModal = (item) => {
+        console.log('[Landing] handleOpenNewsModal item:', item?.id);
+        setSelectedNews(item);
+        setShowNewsModal(true);
+    };
+
     const highlightEvents = useMemo(() => events.slice(0, 3), [events]);
+    const heroArcImage = settings?.hero_arc_image_url || '/FL1.png';
 
     return (
         <div className="landing-page">
             {/* Hero Section */}
-            <section className="landing-hero">
-                <div className="landing-hero__bg">
-                    <div className="landing-hero__overlay"></div>
+            <section className="landing-hero" id="hero">
+                {/* 背景和遮罩图片容器 - 确保左右对齐一致 */}
+                <div className="landing-hero__images">
+                    <div 
+                        className="landing-hero__bg"
+                        style={{
+                            backgroundImage: settings?.hero_bg_url ? `url(${settings.hero_bg_url})` : 'linear-gradient(180deg, #87CEEB 0%, #4682B4 100%)',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                        }}
+                    ></div>
+                    {heroArcImage && (
+                        <img 
+                            src={heroArcImage} 
+                            alt="" 
+                            className="landing-hero__arc-image"
+                        />
+                    )}
                 </div>
                 <div className="container">
                     <div className="landing-hero__inner">
-                        <div className="landing-hero__badge">{settings?.church_name || 'Blessing Haven'}</div>
                         <h1 className="landing-hero__heading">
-                            <span className="landing-hero__heading-main">我們盼望每個人都能在這裡</span>
-                            <span className="landing-hero__heading-accent">被愛、被建立、被差派</span>
+                            <span className="landing-hero__heading-main">{settings?.hero_heading_main || '盼望每個人都能在這裡'}</span>
+                            <span className="landing-hero__heading-accent">{settings?.hero_heading_accent || '被愛、被建立、被差派'}</span>
                         </h1>
-                        <p className="landing-hero__text">
-                            {settings?.tagline || '這裡不只是聚會，更是同行的家。'}
-                            <br />
-                            {settings?.service_times && <span>{settings.service_times}</span>}
-                        </p>
                         <div className="landing-hero__actions">
-                            <Link to="/newcomer" className="landing-hero__btn landing-hero__btn--primary">
-                                我是新朋友
-                            </Link>
-                            <Link to="/events" className="landing-hero__btn landing-hero__btn--secondary">
-                                查看活動
-                            </Link>
+                            <button 
+                                type="button"
+                                className="landing-hero__btn landing-hero__btn--primary"
+                                onClick={handleOpenNewcomerModal}
+                            >
+                                {settings?.hero_button_text || `加入${settings?.church_name || 'Blessing Haven'}`}
+                            </button>
                         </div>
+                        <a href="#content" className="landing-hero__explore">
+                            <div className="landing-hero__explore-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                                </svg>
+                            </div>
+                            <span className="landing-hero__explore-text">探索更多</span>
+                        </a>
                     </div>
+                </div>
+            </section>
+
+            {/* News Highlight Section */}
+            <section className="landing-news" id="content">
+                <div className="container">
+                    <div className="landing-news__header">
+                        <div>
+                            <p className="landing-news__eyebrow">Church Updates</p>
+                            <h2 className="landing-news__title">最新消息</h2>
+                            <p className="landing-news__subtitle">掌握教會動態，找到與你生命節奏之間的共鳴</p>
+                        </div>
+                        {news.length > 0 && (
+                            <Link to="/news" className="landing-news__more">
+                                更多消息
+                            </Link>
+                        )}
+                    </div>
+                    {loadingNews ? (
+                        <div className="text-center py-8 text-text-tertiary">載入中...</div>
+                    ) : news.length === 0 ? (
+                        <div className="text-center py-8 text-text-tertiary">尚無最新消息</div>
+                    ) : (
+                        <>
+                            {/* Desktop: Show 3 items */}
+                            <div className="landing-news__grid landing-news__grid--desktop">
+                                {news.slice(0, 3).map((item) => (
+                                    <article key={item.id} className="landing-news__card landing-news__card--image">
+                                        {item.image_url && (
+                                            <div
+                                                className="landing-news__media"
+                                                style={{ backgroundImage: `url(${item.image_url})` }}
+                                                role="img"
+                                                aria-label={item.title}
+                                            >
+                                                {item.pill && <span className="landing-news__pill">{item.pill}</span>}
+                                            </div>
+                                        )}
+                                        <div className="landing-news__content">
+                                            {item.badge && <span className="landing-news__badge">{item.badge}</span>}
+                                            <h3 className="landing-news__card-title">{item.title}</h3>
+                                            <div className="landing-news__actions">
+                                                <button
+                                                    type="button"
+                                                    className="landing-news__link"
+                                                    onClick={() => handleOpenNewsModal(item)}
+                                                >
+                                                    查看詳情
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                            {/* Mobile: Show 1 item with navigation */}
+                            <div className="landing-news__mobile">
+                                {news.length > 0 && (
+                                    <article className="landing-news__card landing-news__card--image">
+                                        {news[currentNewsIndex]?.image_url && (
+                                            <div
+                                                className="landing-news__media"
+                                                style={{ backgroundImage: `url(${news[currentNewsIndex].image_url})` }}
+                                                role="img"
+                                                aria-label={news[currentNewsIndex].title}
+                                            >
+                                                {news[currentNewsIndex].pill && <span className="landing-news__pill">{news[currentNewsIndex].pill}</span>}
+                                            </div>
+                                        )}
+                                        <div className="landing-news__content">
+                                            {news[currentNewsIndex]?.badge && <span className="landing-news__badge">{news[currentNewsIndex].badge}</span>}
+                                            <h3 className="landing-news__card-title">{news[currentNewsIndex]?.title}</h3>
+                                            <div className="landing-news__actions">
+                                                <button
+                                                    type="button"
+                                                    className="landing-news__link"
+                                                    onClick={() => handleOpenNewsModal(news[currentNewsIndex])}
+                                                >
+                                                    查看詳情
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </article>
+                                )}
+                                {news.length > 1 && (
+                                    <div className="landing-news__mobile-nav">
+                                        <button
+                                            className="landing-news__nav-btn"
+                                            onClick={() => setCurrentNewsIndex((prev) => (prev > 0 ? prev - 1 : news.length - 1))}
+                                            aria-label="上一則"
+                                        >
+                                            ‹
+                                        </button>
+                                        <div className="landing-news__nav-dots">
+                                            {news.slice(0, Math.min(news.length, 5)).map((_, index) => (
+                                                <button
+                                                    key={index}
+                                                    className={`landing-news__nav-dot ${index === currentNewsIndex ? 'landing-news__nav-dot--active' : ''}`}
+                                                    onClick={() => setCurrentNewsIndex(index)}
+                                                    aria-label={`第 ${index + 1} 則消息`}
+                                                />
+                                            ))}
+                                        </div>
+                                        <button
+                                            className="landing-news__nav-btn"
+                                            onClick={() => setCurrentNewsIndex((prev) => (prev < news.length - 1 ? prev + 1 : 0))}
+                                            aria-label="下一則"
+                                        >
+                                            ›
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            {news.length > 3 && (
+                                <div className="text-center mt-8">
+                                    <Link to="/news" className="btn btn-outline">
+                                        查看更多消息
+                                    </Link>
+                                </div>
+                            )}
+                        </>
+                    )}
                 </div>
             </section>
 
@@ -135,21 +320,6 @@ export default function Landing() {
                                 <p className="landing-features__card-text">{feature.description}</p>
                             </div>
                         ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* About Section */}
-            <section className="landing-about">
-                <div className="container">
-                    <div className="landing-about__content">
-                        <h2 className="landing-about__title">關於我們</h2>
-                        <p className="landing-about__text">
-                            {settings?.address || '我們是一個充滿活力的教會，致力於幫助每個人認識神、經歷神的愛，並在信仰中成長。'}
-                        </p>
-                        <Link to="/about" className="landing-about__btn">
-                            認識教會
-                        </Link>
                     </div>
                 </div>
             </section>
@@ -231,9 +401,13 @@ export default function Landing() {
                             無論您在人生的哪個階段，我們都歡迎您來到教會，一起經歷神的愛與恩典。
                         </p>
                         <div className="landing-cta__actions">
-                            <Link to="/newcomer" className="landing-cta__btn landing-cta__btn--primary">
+                            <button
+                                type="button"
+                                className="landing-cta__btn landing-cta__btn--primary"
+                                onClick={handleOpenNewcomerModal}
+                            >
                                 新朋友登記
-                            </Link>
+                            </button>
                             <Link to="/give" className="landing-cta__btn landing-cta__btn--secondary">
                                 支持教會
                             </Link>
@@ -241,6 +415,19 @@ export default function Landing() {
                     </div>
                 </div>
             </section>
+
+            <NewcomerModal
+                isOpen={showNewcomerModal}
+                onClose={() => setShowNewcomerModal(false)}
+            />
+            <NewsDetailModal
+                isOpen={showNewsModal}
+                onClose={() => {
+                    setShowNewsModal(false);
+                    setSelectedNews(null);
+                }}
+                newsItem={selectedNews}
+            />
         </div>
     );
 }

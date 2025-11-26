@@ -1,66 +1,51 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
-import { adminMenu } from '../config/adminMenu';
+import { adminMenuGroups } from '../config/adminMenu';
+import { useSettingsStore } from '../store/settings';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen = false, onClose = () => {} }) {
     const location = useLocation();
-    const { user, logout, hasPermission } = useAuthStore();
+    const { hasPermission } = useAuthStore();
+    const settings = useSettingsStore((state) => state.settings);
 
     return (
-        <aside className="sidebar">
-            <div className="sidebar__logo">
-                <Link to="/" className="sidebar__logo-link">
-                    <div className="sidebar__logo-mark">⛪</div>
-                    <div>
-                        <p className="sidebar__logo-title">管理後台</p>
-                        <p className="sidebar__logo-subtitle">Blessing Haven</p>
-                    </div>
-                </Link>
+        <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
+            <div className="sidebar__header">
+                <div className="sidebar__title">{settings?.church_name || 'Blessing Haven'}</div>
+                <button className="sidebar__close" onClick={onClose} aria-label="Close menu">
+                    ×
+                </button>
             </div>
 
             <nav className="sidebar__nav">
-                {adminMenu.map((item) => {
-                    if (item.permission && !hasPermission(item.permission)) return null;
-                    const isActive = location.pathname === item.path;
+                {adminMenuGroups.map((group, groupIndex) => {
+                    const visibleItems = group.items.filter(
+                        (item) => !item.permission || hasPermission(item.permission)
+                    );
+                    
+                    if (visibleItems.length === 0) return null;
+
                     return (
-                        <Link
-                            key={item.path}
-                            to={item.path}
-                            className={`sidebar__nav-link ${isActive ? 'sidebar__nav-link--active' : ''}`}
-                        >
-                            <span className="sidebar__nav-icon">{item.icon}</span>
-                            <span>{item.label}</span>
-                        </Link>
+                        <div key={groupIndex} className="sidebar__group">
+                            <div className="sidebar__group-title">{group.title}</div>
+                            {visibleItems.map((item) => {
+                                const isActive = location.pathname === item.path;
+                                return (
+                                    <Link
+                                        key={item.path}
+                                        to={item.path}
+                                        className={`sidebar__nav-link ${isActive ? 'sidebar__nav-link--active' : ''}`}
+                                        onClick={onClose}
+                                    >
+                                        <span className="sidebar__nav-icon">{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
                     );
                 })}
             </nav>
-
-            <button
-                className="sidebar__logout"
-                onClick={() => {
-                    logout();
-                    window.location.href = '/';
-                }}
-            >
-                <span>登出</span>
-            </button>
         </aside>
     );
-}
-
-function translateRole(role) {
-    switch (role) {
-        case 'admin':
-            return '系統管理員';
-        case 'pastor':
-            return '牧師';
-        case 'leader':
-            return '小組長';
-        case 'staff':
-            return '同工';
-        case 'volunteer':
-            return '志工';
-        default:
-            return '唯讀';
-    }
 }

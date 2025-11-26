@@ -318,25 +318,16 @@ export async function applyAutoTags(c) {
             }
         }
 
-        // Update member tags - use updateMember API to ensure proper validation and field order
+        // Update member tags
         const updatedMember = {
             ...member,
             tags: Array.from(appliedTags).join(','),
             updated_at: new Date().toISOString(),
         };
 
-        // Get headers to ensure correct field order
-        const headers = await sheets.getHeaders('Members');
         const members = await sheets.read('Members');
         const rowIndex = members.findIndex(m => m.id === memberId);
-        
-        // Build values array in the correct order based on headers
-        const values = headers.map(header => {
-            // Handle missing fields (like district) by providing empty string
-            return updatedMember[header] !== undefined ? updatedMember[header] : '';
-        });
-        
-        await sheets.update('Members', rowIndex, values);
+        await sheets.update('Members', rowIndex, Object.values(updatedMember));
 
         return c.json({
             message: '自動貼標完成',

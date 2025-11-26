@@ -33,13 +33,6 @@ const PERMISSION_CATALOG = [
             { key: 'events:update', label: '編輯活動' },
             { key: 'events:delete', label: '刪除活動' },
             { key: 'events:checkin', label: '活動報到' },
-            { key: 'news:read', label: '檢視消息' },
-            { key: 'news:create', label: '建立消息' },
-            { key: 'news:update', label: '編輯消息' },
-            { key: 'news:delete', label: '刪除消息' },
-            { key: 'about:manage', label: '管理關於我們內容' },
-            { key: 'sermons:manage', label: '管理主日訊息' },
-            { key: 'give:manage', label: '管理線上奉獻內容' },
             { key: 'courses:read', label: '檢視課程' },
             { key: 'courses:create', label: '建立課程' },
             { key: 'courses:update', label: '編輯課程' },
@@ -70,12 +63,6 @@ const PERMISSION_CATALOG = [
             { key: 'surveys:create', label: '建立問卷' },
             { key: 'surveys:update', label: '編輯問卷' },
             { key: 'surveys:delete', label: '刪除問卷' },
-        ],
-    },
-    {
-        group: '頁面內容',
-        items: [
-            { key: 'landing:manage', label: '管理首頁內容' },
         ],
     },
     {

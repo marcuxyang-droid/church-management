@@ -57,29 +57,25 @@ export class Validator {
             errors.name = '姓名為必填';
         }
 
-        // Email validation (only if provided and not empty)
-        if (member.email && member.email.trim() !== '' && !this.isEmail(member.email)) {
+        // Email validation
+        if (member.email && !this.isEmail(member.email)) {
             errors.email = '電子郵件格式不正確';
         }
 
-        // Phone validation (only if provided and not empty)
-        if (member.phone && member.phone.trim() !== '' && !this.isPhone(member.phone)) {
+        // Phone validation
+        if (member.phone && !this.isPhone(member.phone)) {
             errors.phone = '電話號碼格式不正確';
         }
 
-        // Gender validation (only if provided and not empty)
-        if (member.gender && member.gender.trim() !== '' && !['male', 'female', 'other'].includes(member.gender)) {
+        // Gender validation
+        if (member.gender && !['male', 'female', 'other'].includes(member.gender)) {
             errors.gender = '性別選項不正確';
         }
 
-        // Faith status validation (only if provided and not empty)
-        // Allow empty string or undefined, but if provided, must be valid
+        // Faith status validation
         const validStatuses = ['newcomer', 'seeker', 'baptized', 'transferred'];
-        if (member.faith_status && typeof member.faith_status === 'string' && member.faith_status.trim() !== '') {
-            const trimmedStatus = member.faith_status.trim();
-            if (!validStatuses.includes(trimmedStatus)) {
-                errors.faith_status = `信仰狀態選項不正確: "${trimmedStatus}"。有效選項: ${validStatuses.join(', ')}`;
-            }
+        if (member.faith_status && !validStatuses.includes(member.faith_status)) {
+            errors.faith_status = '信仰狀態選項不正確';
         }
 
         return {
@@ -207,47 +203,6 @@ export class Validator {
         // Capacity validation
         if (course.capacity && course.capacity < 0) {
             errors.capacity = '課程人數上限不能為負數';
-        }
-
-        return {
-            isValid: Object.keys(errors).length === 0,
-            errors,
-        };
-    }
-
-    /**
-     * Validate news data
-     * @param {Object} news - News data
-     * @returns {Object} Validation result
-     */
-    static validateNews(news) {
-        const errors = {};
-
-        // Required fields
-        if (!news.title || news.title.trim() === '') {
-            errors.title = '消息標題為必填';
-        }
-
-        // Date validation
-        if (news.start_date && news.end_date) {
-            const start = new Date(news.start_date);
-            const end = new Date(news.end_date);
-
-            if (end < start) {
-                errors.end_date = '結束時間不能早於開始時間';
-            }
-        }
-
-        // Status validation
-        const validStatuses = ['draft', 'published', 'closed'];
-        if (news.status && !validStatuses.includes(news.status)) {
-            errors.status = '狀態選項不正確';
-        }
-
-        // Variant validation
-        const validVariants = ['image', 'info'];
-        if (news.variant && !validVariants.includes(news.variant)) {
-            errors.variant = '類型選項不正確';
         }
 
         return {
