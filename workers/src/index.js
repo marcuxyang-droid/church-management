@@ -37,9 +37,7 @@ import {
     updateEvent,
     deleteEvent,
     registerForEvent,
-    registerForEventPublic,
     checkInEvent,
-    getEventRegistrations,
 } from './api/events.js';
 
 import {
@@ -114,6 +112,14 @@ import {
 } from './api/settings.js';
 
 import {
+    getNews,
+    getNewsItem,
+    createNews,
+    updateNews,
+    deleteNews,
+} from './api/news.js';
+
+import {
     getRoles,
     createRole,
     updateRole,
@@ -126,50 +132,6 @@ import {
     updateUser,
     resendVerification,
 } from './api/users.js';
-
-import {
-    getNews,
-    getNewsItem,
-    createNews,
-    updateNews,
-    deleteNews,
-} from './api/news.js';
-
-import {
-    getAboutContent,
-    createAboutItem,
-    updateAboutItem,
-    deleteAboutItem,
-} from './api/about.js';
-
-import {
-    getSermons,
-    createSermon,
-    updateSermon,
-    deleteSermon,
-} from './api/sermons.js';
-
-import {
-    getGiveContent,
-    updateGiveConfig,
-    createGiveMethod,
-    updateGiveMethod,
-    deleteGiveMethod,
-    createGiveImpact,
-    updateGiveImpact,
-    deleteGiveImpact,
-} from './api/give.js';
-
-import {
-    getTestimonials,
-    createTestimonial,
-    updateTestimonial,
-    deleteTestimonial,
-    getLandingStats,
-    createLandingStat,
-    updateLandingStat,
-    deleteLandingStat,
-} from './api/landing.js';
 
 const app = new Hono();
 
@@ -230,58 +192,16 @@ app.get(
 // ===== Event Routes =====
 app.get('/api/events', optionalAuthMiddleware, getEvents);
 app.get('/api/events/:id', optionalAuthMiddleware, getEvent);
-app.get('/api/events/:id/registrations', authMiddleware, requirePermission('events:read'), getEventRegistrations);
 app.post('/api/events', authMiddleware, requirePermission('events:create'), createEvent);
 app.put('/api/events/:id', authMiddleware, requirePermission('events:update'), updateEvent);
 app.delete('/api/events/:id', authMiddleware, requirePermission('events:delete'), deleteEvent);
-app.post('/api/events/:id/register-public', registerForEventPublic); // Public registration, no auth required
-app.post('/api/events/:id/register', authMiddleware, registerForEvent); // Authenticated registration
+app.post('/api/events/:id/register', authMiddleware, registerForEvent);
 app.post(
     '/api/events/:id/checkin',
     authMiddleware,
     requirePermission('events:checkin'),
     checkInEvent,
 );
-
-// ===== News Routes =====
-app.get('/api/news', optionalAuthMiddleware, getNews);
-app.get('/api/news/:id', optionalAuthMiddleware, getNewsItem);
-app.post('/api/news', authMiddleware, requirePermission('news:create'), createNews);
-app.put('/api/news/:id', authMiddleware, requirePermission('news:update'), updateNews);
-app.delete('/api/news/:id', authMiddleware, requirePermission('news:delete'), deleteNews);
-
-// ===== Landing Page Content Routes =====
-app.get('/api/landing/testimonials', optionalAuthMiddleware, getTestimonials);
-app.post('/api/landing/testimonials', authMiddleware, requirePermission('landing:manage'), createTestimonial);
-app.put('/api/landing/testimonials/:id', authMiddleware, requirePermission('landing:manage'), updateTestimonial);
-app.delete('/api/landing/testimonials/:id', authMiddleware, requirePermission('landing:manage'), deleteTestimonial);
-
-app.get('/api/landing/stats', optionalAuthMiddleware, getLandingStats);
-app.post('/api/landing/stats', authMiddleware, requirePermission('landing:manage'), createLandingStat);
-app.put('/api/landing/stats/:id', authMiddleware, requirePermission('landing:manage'), updateLandingStat);
-app.delete('/api/landing/stats/:id', authMiddleware, requirePermission('landing:manage'), deleteLandingStat);
-
-// ===== About Page Routes =====
-app.get('/api/about', optionalAuthMiddleware, getAboutContent);
-app.post('/api/about/:section', authMiddleware, requirePermission('about:manage'), createAboutItem);
-app.put('/api/about/:section/:id', authMiddleware, requirePermission('about:manage'), updateAboutItem);
-app.delete('/api/about/:section/:id', authMiddleware, requirePermission('about:manage'), deleteAboutItem);
-
-// ===== Sermons Routes =====
-app.get('/api/sermons', optionalAuthMiddleware, getSermons);
-app.post('/api/sermons', authMiddleware, requirePermission('sermons:manage'), createSermon);
-app.put('/api/sermons/:id', authMiddleware, requirePermission('sermons:manage'), updateSermon);
-app.delete('/api/sermons/:id', authMiddleware, requirePermission('sermons:manage'), deleteSermon);
-
-// ===== Give Page Routes =====
-app.get('/api/give', optionalAuthMiddleware, getGiveContent);
-app.put('/api/give/config', authMiddleware, requirePermission('give:manage'), updateGiveConfig);
-app.post('/api/give/methods', authMiddleware, requirePermission('give:manage'), createGiveMethod);
-app.put('/api/give/methods/:id', authMiddleware, requirePermission('give:manage'), updateGiveMethod);
-app.delete('/api/give/methods/:id', authMiddleware, requirePermission('give:manage'), deleteGiveMethod);
-app.post('/api/give/impacts', authMiddleware, requirePermission('give:manage'), createGiveImpact);
-app.put('/api/give/impacts/:id', authMiddleware, requirePermission('give:manage'), updateGiveImpact);
-app.delete('/api/give/impacts/:id', authMiddleware, requirePermission('give:manage'), deleteGiveImpact);
 
 // ===== Course Routes =====
 app.get('/api/courses', authMiddleware, requirePermission('courses:read'), getCourses);
@@ -328,31 +248,54 @@ app.put('/api/media/:id', authMiddleware, requirePermission('media:update'), upd
 app.delete('/api/media/:id', authMiddleware, requirePermission('media:delete'), deleteMedia);
 
 // ===== Tags Routes =====
-// IMPORTANT: More specific routes must come before parameterized routes
 app.get('/api/tags', authMiddleware, requirePermission('members:read'), getTags);
+app.get('/api/tags/:id', authMiddleware, requirePermission('members:read'), getTag);
 app.post('/api/tags', authMiddleware, requirePermission('members:update'), createTag);
+app.put('/api/tags/:id', authMiddleware, requirePermission('members:update'), updateTag);
+app.delete('/api/tags/:id', authMiddleware, requirePermission('members:delete'), deleteTag);
 
-// ===== Tag Rules Routes (must come before /api/tags/:id) =====
+// ===== Tag Rules Routes =====
 app.get('/api/tags/rules', authMiddleware, requirePermission('members:read'), getTagRules);
 app.post('/api/tags/rules', authMiddleware, requirePermission('members:update'), createTagRule);
 app.put('/api/tags/rules/:id', authMiddleware, requirePermission('members:update'), updateTagRule);
 app.delete('/api/tags/rules/:id', authMiddleware, requirePermission('members:delete'), deleteTagRule);
 
-// ===== Auto-tagging Routes (must come before /api/tags/:id) =====
+// ===== Auto-tagging Routes =====
 app.post('/api/tags/apply/:memberId', authMiddleware, requirePermission('members:update'), applyAutoTags);
 
-// ===== Tag by ID Routes (must come after all specific routes) =====
-app.get('/api/tags/:id', authMiddleware, requirePermission('members:read'), getTag);
-app.put('/api/tags/:id', authMiddleware, requirePermission('members:update'), updateTag);
-app.delete('/api/tags/:id', authMiddleware, requirePermission('members:delete'), deleteTag);
+// ===== News Routes =====
+app.get('/api/news', optionalAuthMiddleware, getNews); // 公开端点，前台使用
+app.get('/api/news/:id', optionalAuthMiddleware, getNewsItem);
+app.post('/api/news', authMiddleware, requirePermission('events:create'), createNews);
+app.put('/api/news/:id', authMiddleware, requirePermission('events:update'), updateNews);
+app.delete('/api/news/:id', authMiddleware, requirePermission('events:delete'), deleteNews);
 
 // ===== Settings Routes =====
-app.get('/api/settings/public', getPublicSettings); // Public endpoint for frontend
+app.get('/api/settings/public', getPublicSettings); // 公开端点，前台使用
 app.get('/api/settings', authMiddleware, requirePermission('settings:read'), getSettings);
 app.put('/api/settings', authMiddleware, requirePermission('settings:update'), updateSettings);
 app.post('/api/settings/logo', authMiddleware, requirePermission('settings:update'), uploadLogo);
 app.post('/api/settings/hero-image', authMiddleware, requirePermission('settings:update'), uploadHeroImage);
 app.get('/api/settings/images', authMiddleware, requirePermission('settings:read'), listUploadedImages);
+
+// Debug route to check Settings sheet structure
+app.get('/api/debug/settings-structure', authMiddleware, requirePermission('settings:read'), async (c) => {
+    try {
+        const { SheetsService } = await import('./services/sheets.js');
+        const sheets = new SheetsService(c.env);
+        const headers = await sheets.getHeaders('Settings');
+        const rows = await sheets.read('Settings');
+        return c.json({
+            headers,
+            rowCount: rows.length,
+            sampleRows: rows.slice(0, 5),
+            allRows: rows,
+        });
+    } catch (error) {
+        console.error('Debug settings error:', error);
+        return c.json({ error: error.message }, 500);
+    }
+});
 
 // ===== Role Routes =====
 app.get('/api/roles', authMiddleware, requirePermission('roles:manage'), getRoles);
@@ -372,41 +315,22 @@ app.get('/api/uploads/:key{.+}', async (c) => {
         if (!c.env.MEDIA_BUCKET) {
             return c.json({ error: '未設定媒體倉儲' }, 500);
         }
-        const key = decodeURIComponent(c.req.param('key'));
+        // Decode the key to handle URL-encoded paths
+        const encodedKey = c.req.param('key');
+        const key = decodeURIComponent(encodedKey);
+        
         const r2 = new R2Service(c.env.MEDIA_BUCKET);
         const file = await r2.get(key);
-        
-        // Get origin from request for CORS
-        const origin = c.req.header('Origin') || '*';
-        
         return new Response(file.body, {
             headers: {
                 'Content-Type': file.contentType || 'application/octet-stream',
                 'Cache-Control': 'public, max-age=31536000, immutable',
-                'Access-Control-Allow-Origin': origin,
-                'Access-Control-Allow-Methods': 'GET, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Max-Age': '86400',
             },
         });
     } catch (error) {
         console.error('Serve upload error:', error);
         return c.json({ error: '檔案不存在' }, 404);
     }
-});
-
-// Handle OPTIONS for CORS preflight
-app.options('/api/uploads/:key{.+}', async (c) => {
-    const origin = c.req.header('Origin') || '*';
-    return new Response(null, {
-        status: 204,
-        headers: {
-            'Access-Control-Allow-Origin': origin,
-            'Access-Control-Allow-Methods': 'GET, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Max-Age': '86400',
-        },
-    });
 });
 
 app.notFound((c) => c.json({ error: 'Not Found' }, 404));

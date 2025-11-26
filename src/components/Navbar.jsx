@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/settings';
 
 const links = [
+    { path: '/', label: '首頁' },
     { path: '/about', label: '關於我們' },
     { path: '/events', label: '活動訊息' },
     { path: '/sermons', label: '主日訊息' },
     { path: '/give', label: '線上奉獻' },
-    { path: '/newcomer', label: '新朋友' },
 ];
 
 export default function Navbar() {
@@ -38,19 +38,21 @@ export default function Navbar() {
     return (
         <nav className={`navbar ${isScrolled ? 'navbar--scrolled' : ''}`}>
             <div className="container navbar__content">
-                <Link to="/" className="navbar__logo">
-                    <div className="navbar__logo-mark">
-                        {settings?.logo_url ? (
-                            <img src={settings.logo_url} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-                        ) : (
-                            <span className="navbar__logo-icon">⛪</span>
-                        )}
-                    </div>
-                    <div className="navbar__logo-text">
-                        <p className="navbar__logo-title">{settings?.church_name || 'Blessing Haven'}</p>
-                        <p className="navbar__logo-subtitle">{settings?.tagline || '祝福之家'}</p>
-                    </div>
-                </Link>
+                <div className="navbar__logo-wrapper">
+                    <Link to="/" className="navbar__logo">
+                        <div className="navbar__logo-mark">
+                            {settings?.logo_url ? (
+                                <img src={settings.logo_url} alt="logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                            ) : (
+                                <span className="navbar__logo-icon">⛪</span>
+                            )}
+                        </div>
+                        <div className="navbar__logo-text">
+                            <p className="navbar__logo-title">{settings?.church_name || 'Blessing Haven'}</p>
+                            <p className="navbar__logo-subtitle">{settings?.tagline || '祝福之家'}</p>
+                        </div>
+                    </Link>
+                </div>
 
                 <div className="navbar__links">
                     {links.map((link) => {

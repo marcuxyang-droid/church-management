@@ -1,7 +1,9 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import { useAuthStore } from '../store/auth';
 import { adminMenu } from '../config/adminMenu';
+import { useSettingsStore } from '../store/settings';
 
 function translateRole(role) {
     const roleMap = {
@@ -16,14 +18,31 @@ function translateRole(role) {
 }
 
 export default function AdminLayout() {
-    const { user, hasPermission } = useAuthStore();
+    const { user, hasPermission, logout } = useAuthStore();
     const navigate = useNavigate();
     const location = useLocation();
-    const availableMenu = adminMenu.filter((item) => !item.permission || hasPermission(item.permission));
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const settings = useSettingsStore((state) => state.settings);
+    const fetchSettings = useSettingsStore((state) => state.fetchSettings);
+
+    useEffect(() => {
+        if (!settings) {
+            fetchSettings();
+        }
+    }, [settings, fetchSettings]);
+
+    const availableMenu = useMemo(
+        () => adminMenu.filter((item) => !item.permission || hasPermission(item.permission)),
+        [hasPermission],
+    );
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#f2f4f8' }}>
-            <Sidebar />
+            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <div
+                className={`sidebar__overlay ${sidebarOpen ? 'sidebar__overlay--visible' : ''}`}
+                onClick={() => setSidebarOpen(false)}
+            />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <header
                     style={{
@@ -38,42 +57,36 @@ export default function AdminLayout() {
                         zIndex: 10,
                     }}
                 >
-                    <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a' }}>
-                        後台控制台
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                        <select
-                            value={availableMenu.find((item) => location.pathname.startsWith(item.path))?.path || ''}
-                            onChange={(e) => {
-                                if (e.target.value) navigate(e.target.value);
-                            }}
-                            style={{
-                                padding: '0.5rem 1.25rem',
-                                borderRadius: '999px',
-                                border: '1px solid #d5d9e4',
-                                background: '#f8fafc',
-                                fontWeight: 600,
-                                color: '#1f2937',
-                            }}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <button
+                            className="admin-menu-toggle"
+                            onClick={() => setSidebarOpen(true)}
+                            aria-label="Toggle sidebar"
                         >
-                            {availableMenu.map((item) => (
-                                <option key={item.path} value={item.path}>{item.label}</option>
-                            ))}
-                        </select>
+                            <span />
+                            <span />
+                            <span />
+                        </button>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a' }}>
+                            {settings?.church_name || 'Blessing Haven'} ｜ 管理後台
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                         {user && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                <span>{user.member?.name || user.email}</span>
-                                <span style={{ color: 'var(--text-tertiary)' }}>·</span>
-                                <span style={{
-                                    padding: '0.25rem 0.75rem',
-                                    borderRadius: '999px',
-                                    background: 'var(--bg-secondary)',
-                                    color: 'var(--text-primary)',
-                                    fontWeight: '500',
-                                }}>
-                                    {translateRole(user.role)}
-                                </span>
-                            </div>
+                            <>
+                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                    {user.member?.name || user.email}
+                                </div>
+                                <button
+                                    className="btn btn-outline btn-sm"
+                                    onClick={() => {
+                                        logout();
+                                        window.location.href = '/';
+                                    }}
+                                >
+                                    登出
+                                </button>
+                            </>
                         )}
                     </div>
                 </header>

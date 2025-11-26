@@ -35,12 +35,6 @@ const PERMISSIONS = {
     'events:delete': ['leader', 'pastor', 'admin'],
     'events:checkin': ['volunteer', 'staff', 'leader', 'pastor', 'admin'],
 
-    // News permissions
-    'news:read': ['readonly', 'volunteer', 'staff', 'leader', 'pastor', 'admin'],
-    'news:create': ['staff', 'leader', 'pastor', 'admin'],
-    'news:update': ['staff', 'leader', 'pastor', 'admin'],
-    'news:delete': ['leader', 'pastor', 'admin'],
-
     // Course permissions
     'courses:read': ['readonly', 'volunteer', 'staff', 'leader', 'pastor', 'admin'],
     'courses:create': ['leader', 'pastor', 'admin'],
@@ -82,14 +76,6 @@ const PERMISSIONS = {
     'settings:update': ['admin'],
     'roles:manage': ['admin'],
     'users:invite': ['admin'],
-
-    // Landing / page content
-    'landing:manage': ['staff', 'leader', 'pastor', 'admin'],
-
-    // About / sermons / give management
-    'about:manage': ['staff', 'leader', 'pastor', 'admin'],
-    'sermons:manage': ['staff', 'leader', 'pastor', 'admin'],
-    'give:manage': ['staff', 'leader', 'pastor', 'admin'],
 };
 
 /**
@@ -103,17 +89,10 @@ export function hasPermission(user, permission) {
         return false;
     }
 
-    // Admin role has all permissions
-    if (user.role === 'admin') {
-        return true;
-    }
-
-    // Check custom permissions override first
     if (Array.isArray(user.permissions) && user.permissions.length > 0) {
         return user.permissions.includes(permission);
     }
 
-    // Check role-based permissions
     const allowedRoles = PERMISSIONS[permission];
     if (!allowedRoles) {
         return false;

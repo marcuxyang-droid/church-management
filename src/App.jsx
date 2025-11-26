@@ -23,6 +23,10 @@ import Surveys from './pages/admin/Surveys';
 import Media from './pages/admin/Media';
 import Tags from './pages/admin/Tags';
 import SystemSettings from './pages/admin/SystemSettings';
+import HomeSettings from './pages/admin/HomeSettings';
+import AboutSettings from './pages/admin/AboutSettings';
+import GiveSettings from './pages/admin/GiveSettings';
+import AdminNews from './pages/admin/News';
 import AccessControl from './pages/admin/AccessControl';
 
 // Layout components
@@ -71,6 +75,10 @@ function App() {
                     <Route path="surveys" element={<Surveys />} />
                     <Route path="media" element={<Media />} />
                     <Route path="tags" element={<Tags />} />
+                    <Route path="home" element={<HomeSettings />} />
+                    <Route path="about" element={<AboutSettings />} />
+                    <Route path="give" element={<GiveSettings />} />
+                    <Route path="news" element={<AdminNews />} />
                     <Route path="settings" element={<SystemSettings />} />
                     <Route path="access" element={<AccessControl />} />
                 </Route>

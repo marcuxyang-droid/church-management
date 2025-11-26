@@ -82,8 +82,11 @@ export class R2Service {
     async list(prefix = '') {
         try {
             const listed = await this.bucket.list({ prefix });
-
-            return listed.objects.map(obj => ({
+            
+            // R2 list returns { objects: [...], truncated: boolean }
+            const objects = listed.objects || [];
+            
+            return objects.map(obj => ({
                 key: obj.key,
                 size: obj.size,
                 uploaded: obj.uploaded,

@@ -3,9 +3,12 @@ import imageCompression from 'browser-image-compression';
 import { useSettingsStore } from '../../store/settings';
 import { api } from '../../utils/api';
 
-const FIELD_CONFIG = [
-    { key: 'church_name', label: '教會名稱', placeholder: 'Blessing Haven Church' },
+const BRAND_FIELDS = [
+    { key: 'church_name', label: '教會名稱', placeholder: 'Blessing Haven' },
     { key: 'tagline', label: '標語 / Slogan', placeholder: '被愛、被建立、被差派' },
+];
+
+const CONTACT_FIELDS = [
     { key: 'contact_email', label: '聯絡 Email', placeholder: 'info@church.com' },
     { key: 'address', label: '地址', placeholder: '台北市信義區仁愛路 100 號' },
     { key: 'service_times', label: '聚會時間', placeholder: '主日 10:00 | 禱告會 週三 19:30' },
@@ -13,7 +16,7 @@ const FIELD_CONFIG = [
     { key: 'youtube_url', label: 'YouTube 連結', placeholder: 'https://youtube.com/...' },
 ];
 
-export default function SystemSettings() {
+export default function HomeSettings() {
     const settings = useSettingsStore((state) => state.settings);
     const fetchSettings = useSettingsStore((state) => state.fetchSettings);
     const updateSettingsState = useSettingsStore((state) => state.updateSettingsState);
@@ -60,7 +63,7 @@ export default function SystemSettings() {
         try {
             await api.updateSettings(form);
             updateSettingsState(form);
-            setSuccess('設定已儲存');
+            setSuccess('首頁設定已儲存');
         } catch (err) {
             setError(err.message || '儲存失敗');
         } finally {
@@ -110,10 +113,10 @@ export default function SystemSettings() {
         setSuccess('圖片已選擇');
     };
 
-    const ImageUploadSection = ({ label, type, previewUrl, settingKey }) => (
+    const ImageUploadSection = ({ label, type, previewUrl, settingKey, isLogo = false }) => (
         <div>
             <p className="form-label">{label}</p>
-            {type === 'logo' ? (
+            {isLogo ? (
                 // Logo 垂直布局：图片在上，上传控件在下
                 <div className="flex flex-col gap-md">
                     <div
@@ -275,6 +278,12 @@ export default function SystemSettings() {
 
     return (
         <div className="space-y-8">
+            <div>
+                <h1 className="text-3xl font-bold mb-2">首頁設定</h1>
+                <p className="text-text-secondary">管理前台首頁的顯示內容與設定</p>
+            </div>
+
+            {/* 品牌設定 */}
             <div className="card">
                 <div className="card-header">
                     <h2 className="card-title">品牌設定</h2>
@@ -286,9 +295,10 @@ export default function SystemSettings() {
                         type="logo" 
                         previewUrl={previewLogo}
                         settingKey="logo_url"
+                        isLogo={true}
                     />
                     <div className="grid gap-md">
-                        {FIELD_CONFIG.slice(0, 2).map((field) => (
+                        {BRAND_FIELDS.map((field) => (
                             <div key={field.key}>
                                 <label className="form-label">{field.label}</label>
                                 <input
@@ -303,6 +313,7 @@ export default function SystemSettings() {
                 </div>
             </div>
 
+            {/* Hero Section 設定 */}
             <div className="card">
                 <div className="card-header">
                     <h2 className="card-title">Hero Section 設定</h2>
@@ -314,7 +325,7 @@ export default function SystemSettings() {
                             <label className="form-label">主標題</label>
                             <input
                                 className="input"
-                                placeholder="我們盼望每個人都能在這裡"
+                                placeholder="盼望每個人都能在這裡"
                                 value={form.hero_heading_main || ''}
                                 onChange={(e) => handleChange('hero_heading_main', e.target.value)}
                             />
@@ -344,13 +355,14 @@ export default function SystemSettings() {
                 </div>
             </div>
 
+            {/* 聯絡與聚會資訊 */}
             <div className="card">
                 <div className="card-header">
                     <h2 className="card-title">聯絡與聚會資訊</h2>
                     <p className="card-subtitle">這些資訊會顯示在網站底部與關於我們頁面</p>
                 </div>
                 <div className="grid grid-2 gap-lg">
-                    {FIELD_CONFIG.slice(2).map((field) => (
+                    {CONTACT_FIELDS.map((field) => (
                         <div key={field.key}>
                             <label className="form-label">{field.label}</label>
                             <input
