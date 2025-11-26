@@ -112,6 +112,8 @@ npx wrangler secret put JWT_SECRET
 **若需手動操作**：
 
 ```bash
+# 僅當目錄名稱是 V1 或更新（例如 V2）時才允許部署
+
 # 部署 Workers
 cd workers
 npm run deploy
@@ -137,6 +139,8 @@ npx wrangler pages deploy dist --project-name=church-management --branch=product
 1. 訪問您的網站
 2. 使用管理員帳號登入
 3. 開始新增會友、活動等資料
+
+> 📦 備註：若需保留 V0.x 等舊版本，請改存到 Git 的 `legacy/*` 分支，不要放在專案根目錄，部署 guard 會阻擋 V0.x 目錄。
 
 ## 常見問題
 

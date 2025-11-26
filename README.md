@@ -103,6 +103,7 @@ npm run dev
 為避免錯誤部署舊版程式，請在專案根目錄執行 `./deploy.ps1`（Windows/PowerShell）或 `bash ./deploy.sh`（macOS/Linux）。腳本會：
 
 1. 確認目前目錄含 `.deploystamp`（僅 V1 擁有）後才允許部署
+2. 驗證資料夾名稱為 `V1` 或更高版本（例如 `V2`），`V0.x` 會被阻擋
 2. 建置前端 `npm run build`
 3. 部署 Workers (`cd workers && npm run deploy`)
 4. 將 `dist/` 釋出到 Cloudflare Pages Production Branch
@@ -210,5 +211,17 @@ npm run deploy
 MIT License
 
 ## 📞 聯絡
+## 🗂️ 過往版本管理
+
+- 請勿在專案根目錄保留 `V0.x`、`restore` 等舊資料夾。將它們移除或放在倉庫外，避免誤觸部署腳本。
+- 若需保存歷史程式，可透過 Git 分支處理，例如：
+  ```bash
+  # 從當前 main 建立 legacy/v0.5 分支，並切換
+  git checkout -b legacy/v0.5
+  # 以 V0.5 的檔案內容覆蓋並提交
+  git commit -am "chore: archive v0.5"
+  git push origin legacy/v0.5
+  ```
+- 產線部署只接受 `V1` 或更高版本的資料夾，舊目錄即使存在也會因部署鎖而失敗。
 
 如有任何問題，請聯繫開發團隊。

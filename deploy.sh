@@ -5,6 +5,16 @@
 # Always run from the repo root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR" || exit 1
+PROJECT_FOLDER="$(basename "$SCRIPT_DIR")"
+if [[ ! "$PROJECT_FOLDER" =~ ^V([0-9]+(\.[0-9]+)?)$ ]]; then
+  echo "❌ Invalid project folder name '$PROJECT_FOLDER'. Expected names like V1, V1.1, V2..."
+  exit 1
+fi
+MAJOR_VERSION="${BASH_REMATCH[1]%%.*}"
+if (( MAJOR_VERSION < 1 )); then
+  echo "❌ Deployment blocked: only V1 (major version ≥1) or newer folders may deploy. Current folder: $PROJECT_FOLDER"
+  exit 1
+fi
 
 STAMP_FILE="$SCRIPT_DIR/.deploystamp"
 EXPECTED_STAMP="CHURCH_MANAGEMENT_V1"

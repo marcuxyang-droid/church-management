@@ -2,6 +2,19 @@
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptRoot
+$projectFolder = Split-Path $scriptRoot -Leaf
+
+$versionMatch = [regex]::Match($projectFolder, '^V(?<ver>\d+(\.\d+)?)$', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+if (-not $versionMatch.Success) {
+    Write-Host "❌ Invalid project folder name '$projectFolder'. Expected something like V1, V1.1, V2..." -ForegroundColor Red
+    exit 1
+}
+
+$majorVersion = [int]($versionMatch.Groups['ver'].Value.Split('.')[0])
+if ($majorVersion -lt 1) {
+    Write-Host "❌ Deployment blocked: only V1 (major version ≥1) or newer folders may deploy. Current folder: $projectFolder" -ForegroundColor Red
+    exit 1
+}
 
 $stampFile = Join-Path $scriptRoot ".deploystamp"
 $expectedStamp = "CHURCH_MANAGEMENT_V1"
